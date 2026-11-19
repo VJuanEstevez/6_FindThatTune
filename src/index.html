@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Find that song: tu reproductor de música, favoritos y juego para adivinar canciones." />
+  <title>Find that song</title>
+  <script>
+    // Aplica el tema guardado antes del primer pintado para evitar un parpadeo.
+    try {
+      const theme = localStorage.getItem("find-that-song-theme");
+      if (["violet", "emerald", "ocean", "light", "amber", "rose", "night", "mono"].includes(theme)) {
+        document.documentElement.dataset.theme = theme;
+      }
+    } catch {
+      // Sin acceso a localStorage se mantiene el tema por defecto.
+    }
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+  <div class="dashboard">
+    <aside class="drawer">
+      <div class="drawer__brand">
+        <span class="drawer__logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"
+            focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="12" r="5" />
+            <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+          </svg>
+        </span>
+        <h1 class="drawer__title">Find that <span>song</span></h1>
+      </div>
+
+      <nav class="drawer__nav">
+        <ul class="nav-list">
+          <li>
+            <a class="nav-link is-active" href="#home" data-view="home" aria-current="page">
+              <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M3 10.5 12 3l9 7.5" />
+                <path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5" />
+                <path d="M9.5 21v-6h5v6" />
+              </svg>
+              <span class="nav-link__label">Inicio</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#search" data-view="search">
+              <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <span class="nav-link__label">Buscar</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#favorites" data-view="favorites">
+              <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path
+                  d="M20.8 5.6a5.3 5.3 0 0 0-7.5 0L12 6.9l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5l1.3 1.3L12 22l7.5-7.6 1.3-1.3a5.3 5.3 0 0 0 0-7.5Z" />
+              </svg>
+              <span class="nav-link__label">Favoritos</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#player" data-view="player">
+              <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m10 8.5 5.5 3.5L10 15.5z" fill="currentColor" stroke="none" />
+              </svg>
+              <span class="nav-link__label">Reproductor</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#guess-the-song" data-view="game">
+              <svg class="nav-link__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path
+                  d="M6.5 8h11a4 4 0 0 1 3.9 3.1l1 5A2.5 2.5 0 0 1 20 19a2.5 2.5 0 0 1-2-1l-1.5-2H7.5L6 18a2.5 2.5 0 0 1-2 1 2.5 2.5 0 0 1-2.4-2.9l1-5A4 4 0 0 1 6.5 8Z" />
+                <path d="M8 11v3" />
+                <path d="M6.5 12.5h3" />
+                <circle cx="16" cy="12" r="0.9" fill="currentColor" stroke="none" />
+                <circle cx="18" cy="14.5" r="0.9" fill="currentColor" stroke="none" />
+              </svg>
+              <span class="nav-link__label">Adivina la canción</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="drawer__footer">
+        <button class="settings-button" type="button">
+          <svg class="settings-button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+          </svg>
+          <span class="settings-button__label">Ajustes</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="dashboard__content">
+      <header class="header">
+        <search class="header__search">
+          <form class="search-form" action="#" method="get">
+            <label class="visually-hidden" for="song-search">Buscar canciones</label>
+            <svg class="search-form__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+            <input class="search-form__input" id="song-search" name="q" type="search"
+              placeholder="Buscar canciones, artistas o álbumes..." autocomplete="off" />
+            <button class="search-form__submit" type="submit">Buscar</button>
+          </form>
+        </search>
+      </header>
+
+      <main class="main" id="main-content" tabindex="-1">
+        <section class="home" data-view="home" aria-labelledby="home-title">
+          <div class="home__heading">
+            <div>
+              <h2 class="home__title" id="home-title">Esto es <span>Find That Song</span></h2>
+              <p class="home__subtitle">Escucha tu música favorita en cualquier momento.</p>
+            </div>
+          </div>
+
+          <div class="album-slider" data-album-slider>
+            <p class="album-slider__status" role="status">Cargando discos...</p>
+          </div>
+        </section>
+
+        <section class="home" data-view="search" aria-labelledby="search-title" hidden>
+          <div class="home__heading">
+            <div>
+              <h2 class="home__title" id="search-title">Discos en tendencia</h2>
+              <p class="home__subtitle">Lo más escuchado ahora del momento.</p>
+            </div>
+
+            <div class="search-filters">
+              <label class="search-field">
+                <span class="search-field__label">Género</span>
+                <select class="search-field__select" data-genre-select>
+                  <option value="all">Todos los géneros</option>
+                </select>
+              </label>
+
+              <label class="search-field">
+                <span class="search-field__label">Canciones / Álbumes</span>
+                <select class="search-field__select" data-type-select>
+                  <option value="albums">Álbumes</option>
+                  <option value="songs">Canciones</option>
+                </select>
+              </label>
+
+              <fieldset class="view-switch">
+                <legend class="visually-hidden">Vista de resultados</legend>
+                <label class="view-switch__option">
+                  <input class="visually-hidden" type="radio" name="view-mode" value="cards" checked />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"
+                    aria-hidden="true" focusable="false">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                </label>
+                <label class="view-switch__option">
+                  <input class="visually-hidden" type="radio" name="view-mode" value="list" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                    aria-hidden="true" focusable="false">
+                    <path d="M8 6h13M8 12h13M8 18h13" />
+                    <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
+                  </svg>
+                </label>
+              </fieldset>
+            </div>
+          </div>
+
+            <div class="album-grid" data-album-grid>
+              <p class="album-slider__status" role="status">Cargando discos...</p>
+            </div>
+
+            <nav class="album-pagination" data-album-pagination aria-label="Paginación de discos"></nav>
+        </section>
+
+        <section class="home" data-view="favorites" aria-labelledby="favorites-title" hidden>
+          <div class="home__heading">
+            <div>
+              <h2 class="home__title" id="favorites-title">Favoritos</h2>
+              <p class="home__subtitle">Tus álbumes y canciones guardados.</p>
+            </div>
+
+            <div class="search-filters">
+              <label class="search-field">
+                <span class="search-field__label">Género</span>
+                <select class="search-field__select" data-favorites-genre>
+                  <option value="all">Todos los géneros</option>
+                </select>
+              </label>
+
+              <label class="search-field">
+                <span class="search-field__label">Canciones / Álbumes</span>
+                <select class="search-field__select" data-favorites-type>
+                  <option value="albums">Álbumes</option>
+                  <option value="songs">Canciones</option>
+                </select>
+              </label>
+
+              <fieldset class="view-switch">
+                <legend class="visually-hidden">Vista de favoritos</legend>
+                <label class="view-switch__option">
+                  <input class="visually-hidden" type="radio" name="favorites-view-mode" value="cards" checked />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"
+                    aria-hidden="true" focusable="false">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                </label>
+                <label class="view-switch__option">
+                  <input class="visually-hidden" type="radio" name="favorites-view-mode" value="list" />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                    aria-hidden="true" focusable="false">
+                    <path d="M8 6h13M8 12h13M8 18h13" />
+                    <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
+                  </svg>
+                </label>
+              </fieldset>
+            </div>
+          </div>
+
+          <div class="album-grid" data-favorites-grid></div>
+        </section>
+
+        <section class="home" data-view="player" aria-labelledby="player-title" hidden>
+          <div class="home__heading">
+            <div>
+              <h2 class="home__title" id="player-title">Reproductor</h2>
+              <p class="home__subtitle">Elige cómo quieres escuchar tu música.</p>
+            </div>
+
+            <fieldset class="player-tabs">
+              <legend class="visually-hidden">Tipo de reproductor</legend>
+              <label class="player-tabs__option">
+                <input class="visually-hidden" type="radio" name="player-type" value="vinyl" checked />
+                <span>Vinilo</span>
+              </label>
+              <label class="player-tabs__option">
+                <input class="visually-hidden" type="radio" name="player-type" value="cassette" />
+                <span>Casete</span>
+              </label>
+              <label class="player-tabs__option">
+                <input class="visually-hidden" type="radio" name="player-type" value="album" />
+                <span>Álbum</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <div class="player-layout">
+            <div class="deck" data-deck>
+              <div class="deck__stage" data-deck-vinyl>
+                <div class="vinyl">
+                  <div class="vinyl__disc">
+                    <img class="vinyl__label" data-vinyl-label alt="" width="160" height="160"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%231d1d2b'/%3E%3Ccircle cx='12' cy='12' r='4' fill='%23a78bfa'/%3E%3C/svg%3E" />
+                    <span class="vinyl__hole"></span>
+                  </div>
+                  <div class="vinyl__tonearm" aria-hidden="true">
+                    <span class="vinyl__tonearm-base"></span>
+                    <span class="vinyl__tonearm-rod"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="deck__stage" data-deck-cassette hidden>
+                <div class="cassette">
+                  <div class="cassette__label">
+                    <span class="cassette__brand">MIXTAPE</span>
+                    <span class="cassette__track" data-cassette-track>Selecciona una canción</span>
+                  </div>
+                  <div class="cassette__window">
+                    <span class="cassette__reel"></span>
+                    <span class="cassette__tape"></span>
+                    <span class="cassette__reel"></span>
+                  </div>
+                  <span class="cassette__screw"></span>
+                  <span class="cassette__screw"></span>
+                </div>
+              </div>
+
+              <div class="deck__stage" data-deck-album hidden>
+                <div class="album-poster">
+                  <img data-album-poster alt="" width="320" height="320"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%231d1d2b'/%3E%3Ccircle cx='12' cy='12' r='4' fill='%23a78bfa'/%3E%3C/svg%3E" />
+                </div>
+              </div>
+
+              <div class="deck__info">
+                <p class="deck__title" data-deck-title>Selecciona una canción</p>
+                <button class="deck__artist" type="button" data-deck-artist>Reproductor</button>
+                <div class="deck__controls">
+                  <button class="deck__button" type="button" data-deck-prev aria-label="Canción anterior">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true" focusable="false">
+                      <path d="M11 18V6l-7 6 7 6Zm8-12v12l-7-6 7-6Z" />
+                    </svg>
+                  </button>
+                  <button class="deck__button deck__button--main" type="button" data-deck-toggle
+                    aria-label="Reproducir">
+                    <svg class="player__icon-play" viewBox="0 0 24 24" fill="currentColor" stroke="none"
+                      aria-hidden="true" focusable="false">
+                      <path d="M8 5v14l11-7L8 5Z" />
+                    </svg>
+                    <svg class="player__icon-pause" viewBox="0 0 24 24" fill="currentColor" stroke="none"
+                      aria-hidden="true" focusable="false">
+                      <rect x="6" y="5" width="4" height="14" rx="1" />
+                      <rect x="14" y="5" width="4" height="14" rx="1" />
+                    </svg>
+                  </button>
+                  <button class="deck__button" type="button" data-deck-next aria-label="Canción siguiente">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true" focusable="false">
+                      <path d="M5 6v12l7-6-7-6Zm8 0v12l7-6-7-6Z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="up-next">
+              <h3 class="up-next__title">A continuación</h3>
+              <ul class="up-next__list" data-up-next></ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="home" data-view="game" aria-labelledby="game-title" hidden>
+          <div class="home__heading">
+            <div>
+              <h2 class="home__title" id="game-title">Adivina la canción</h2>
+              <p class="home__subtitle">Un nuevo reto musical está en camino.</p>
+            </div>
+          </div>
+
+          <div class="construction-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path
+                d="M6.5 8h11a4 4 0 0 1 3.9 3.1l1 5A2.5 2.5 0 0 1 20 19a2.5 2.5 0 0 1-2-1l-1.5-2H7.5L6 18a2.5 2.5 0 0 1-2 1 2.5 2.5 0 0 1-2.4-2.9l1-5A4 4 0 0 1 6.5 8Z" />
+              <path d="M8 11v3M6.5 12.5h3" />
+              <circle cx="16" cy="12" r="0.9" fill="currentColor" stroke="none" />
+              <circle cx="18" cy="14.5" r="0.9" fill="currentColor" stroke="none" />
+            </svg>
+            <h3>En construcción</h3>
+            <p>Estamos preparando el juego. Vuelve pronto para poner a prueba tu oído.</p>
+          </div>
+        </section>
+      </main>
+
+      <section class="player" data-player aria-label="Reproductor">
+        <img class="player__cover" data-player-cover alt="" width="56" height="56"
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%231d1d2b'/%3E%3Ccircle cx='12' cy='12' r='4' fill='%23a78bfa'/%3E%3Ccircle cx='12' cy='12' r='1' fill='%231d1d2b'/%3E%3C/svg%3E" />
+        <div class="player__info">
+          <p class="player__title" data-player-title>Selecciona una canción</p>
+          <button class="player__artist" type="button" data-player-artist>Reproductor</button>
+        </div>
+        <input class="player__progress" data-player-progress type="range" min="0" max="100" value="0"
+          aria-label="Progreso de la canción" />
+        <div class="player__controls">
+          <button class="player__button" type="button" data-player-prev aria-label="Canción anterior">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true" focusable="false">
+              <path d="M11 18V6l-7 6 7 6Zm8-12v12l-7-6 7-6Z" />
+            </svg>
+          </button>
+          <button class="player__button player__button--main" type="button" data-player-toggle aria-label="Reproducir">
+            <svg class="player__icon-play" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"
+              focusable="false">
+              <path d="M8 5v14l11-7L8 5Z" />
+            </svg>
+            <svg class="player__icon-pause" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"
+              focusable="false">
+              <rect x="6" y="5" width="4" height="14" rx="1" />
+              <rect x="14" y="5" width="4" height="14" rx="1" />
+            </svg>
+          </button>
+          <button class="player__button" type="button" data-player-next aria-label="Canción siguiente">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true" focusable="false">
+              <path d="M5 6v12l7-6-7-6Zm8 0v12l7-6-7-6Z" />
+            </svg>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <dialog class="artist-dialog" id="artist-dialog" aria-labelledby="artist-dialog-title">
+    <div class="artist-dialog__header">
+      <div>
+        <h2 class="artist-dialog__title" id="artist-dialog-title">Artista</h2>
+      </div>
+      <button class="artist-dialog__close" type="button" data-artist-close aria-label="Cerrar discografía">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </div>
+
+    <fieldset class="view-switch">
+      <legend class="visually-hidden">Vista de la discografía</legend>
+      <label class="view-switch__option">
+        <input class="visually-hidden" type="radio" name="artist-view-mode" value="cards" checked />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"
+          aria-hidden="true" focusable="false">
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </svg>
+      </label>
+      <label class="view-switch__option">
+        <input class="visually-hidden" type="radio" name="artist-view-mode" value="list" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          aria-hidden="true" focusable="false">
+          <path d="M8 6h13M8 12h13M8 18h13" />
+          <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
+          <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
+          <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
+        </svg>
+      </label>
+    </fieldset>
+
+    <div class="artist-dialog__content" data-artist-content>
+      <p class="artist-dialog__status" role="status">Cargando discografía...</p>
+    </div>
+  </dialog>
+
+  <dialog class="theme-dialog" id="theme-dialog" aria-labelledby="theme-dialog-title">
+    <div class="theme-dialog__header">
+      <div>
+        <h2 class="theme-dialog__title" id="theme-dialog-title">Ajustes</h2>
+        <p class="theme-dialog__subtitle">Elige la apariencia de la interfaz.</p>
+      </div>
+      <button class="theme-dialog__close" type="button" data-dialog-close aria-label="Cerrar ajustes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </div>
+
+    <fieldset class="theme-options">
+      <legend class="visually-hidden">Apariencia</legend>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="violet" checked />
+        <span class="theme-option__preview" data-preview="violet" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Violeta</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="emerald" />
+        <span class="theme-option__preview" data-preview="emerald" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Esmeralda</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="ocean" />
+        <span class="theme-option__preview" data-preview="ocean" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Océano</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="light" />
+        <span class="theme-option__preview" data-preview="light" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Claro</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="amber" />
+        <span class="theme-option__preview" data-preview="amber" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Ámbar</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="rose" />
+        <span class="theme-option__preview" data-preview="rose" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Rosa</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="night" />
+        <span class="theme-option__preview" data-preview="night" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Noche</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+
+      <label class="theme-option">
+        <input class="theme-option__input visually-hidden" type="radio" name="theme" value="mono" />
+        <span class="theme-option__preview" data-preview="mono" aria-hidden="true">
+          <span class="theme-option__preview-side"></span>
+          <span class="theme-option__preview-bar"></span>
+        </span>
+        <span class="theme-option__name">Monocromo</span>
+        <svg class="theme-option__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="m5 12.5 4.5 4.5L19 7" />
+        </svg>
+      </label>
+    </fieldset>
+
+    <div class="settings-control">
+      <label class="settings-control__label" for="grid-columns">Columnas del grid</label>
+      <div class="settings-control__row">
+        <input class="settings-control__slider" id="grid-columns" type="range" min="4" max="6" step="1" value="4" />
+        <output class="settings-control__value" id="grid-columns-value" for="grid-columns">4</output>
+      </div>
+    </div>
+
+    <p class="theme-dialog__hint">Los cambios se guardan automáticamente.</p>
+  </dialog>
+
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>

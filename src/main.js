@@ -1,0 +1,24 @@
+import "./styles.css";
+import { initNavigation } from "./modules/navigation.js";
+import { initSearch } from "./modules/search.js";
+import { initTheme } from "./modules/theme.js";
+import { initAlbumSlider } from "./modules/album-slider.js";
+import { initSearchView } from "./modules/search-view.js";
+import { initGridColumns } from "./modules/grid-columns.js";
+import { initFavorites } from "./modules/favorites.js";
+import { initFavoritesView } from "./modules/favorites-view.js";
+import { initPlayer } from "./modules/player.js";
+import { initPlayerView } from "./modules/player-view.js";
+import { initArtistModal } from "./modules/artist-modal.js";
+
+initFavorites();
+initArtistModal();
+initPlayer();
+initNavigation();
+initSearch();
+initTheme();
+initAlbumSlider();
+initSearchView();
+initFavoritesView();
+initPlayerView();
+initGridColumns();
