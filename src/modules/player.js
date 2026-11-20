@@ -1,5 +1,6 @@
 import { getItemId } from "./favorites.js";
 import { openArtist } from "./artist-modal.js";
+import { showView } from "./navigation.js";
 
 const player = document.querySelector("[data-player]");
 const cover = document.querySelector("[data-player-cover]");
@@ -9,9 +10,13 @@ const progress = document.querySelector("[data-player-progress]");
 const toggleButton = document.querySelector("[data-player-toggle]");
 const prevButton = document.querySelector("[data-player-prev]");
 const nextButton = document.querySelector("[data-player-next]");
+const queueToggle = document.querySelector("[data-player-queue-toggle]");
+const queuePanel = document.querySelector("[data-player-queue]");
+const queueList = document.querySelector("[data-player-queue-list]");
 
 const audio = new Audio();
 const previewCache = new Map();
+const albumTracksCache = new Map();
 
 let queue = [];
 let currentIndex = 0;
@@ -20,6 +25,39 @@ let playRequest = 0;
 const listeners = new Set();
 
 const notify = () => listeners.forEach((listener) => listener());
+
+const getAlbumTracks = async (album) => {
+  const key = getItemId(album);
+  if (albumTracksCache.has(key)) {
+    return albumTracksCache.get(key);
+  }
+
+  const response = await fetch(
+    `https://itunes.apple.com/lookup?id=${encodeURIComponent(key)}&country=es&entity=song`,
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  const tracks = (data.results ?? [])
+    .filter((result) => result.wrapperType === "track" && result.previewUrl)
+    .map((result, index) => ({
+      id: result.trackId,
+      type: "songs",
+      rank: index + 1,
+      title: result.trackName,
+      artist: result.artistName ?? album.artist,
+      artistId: result.artistId ?? album.artistId,
+      artwork: album.artwork ?? result.artworkUrl100,
+      genre: result.primaryGenreName ?? album.genre,
+      releaseDate: result.releaseDate?.slice(0, 4) ?? album.releaseDate,
+      href: result.trackViewUrl ?? "#",
+    }));
+
+  albumTracksCache.set(key, tracks);
+  return tracks;
+};
 
 const getPreviewUrl = async (item) => {
   const key = getItemId(item);
@@ -53,6 +91,9 @@ const updateInfo = (item) => {
   cover.src = item.artwork;
   cover.alt = `Portada de ${item.title}`;
   progress.value = "0";
+  if (queuePanel && !queuePanel.hidden) {
+    renderQueuePanel();
+  }
   notify();
 };
 
@@ -88,16 +129,31 @@ const loadAndPlay = async () => {
   }
 };
 
-export const playTrack = (item, items = []) => {
+export const playTrack = async (item, items = []) => {
   if (!item) {
     return;
   }
 
-  queue = items.length > 0 ? items : [item];
-  const foundIndex = queue.findIndex((entry) => getItemId(entry) === getItemId(item));
+  let nextQueue = items.length > 0 ? items : [item];
+  let target = item;
+
+  if (item.type === "albums") {
+    try {
+      const tracks = await getAlbumTracks(item);
+      if (tracks.length > 0) {
+        nextQueue = tracks;
+        target = tracks[0];
+      }
+    } catch {
+      // Si no hay pistas, se mantiene el álbum como elemento reproducible.
+    }
+  }
+
+  queue = nextQueue;
+  const foundIndex = queue.findIndex((entry) => getItemId(entry) === getItemId(target));
   currentIndex = foundIndex >= 0 ? foundIndex : 0;
-  currentItem = item;
-  updateInfo(item);
+  currentItem = queue[currentIndex];
+  updateInfo(currentItem);
   loadAndPlay();
 };
 
@@ -147,6 +203,54 @@ export const playQueueIndex = (index) => {
   loadAndPlay();
 };
 
+const renderQueuePanel = () => {
+  const upcoming = [];
+  for (let offset = 1; offset <= Math.min(5, queue.length - 1); offset += 1) {
+    upcoming.push({ item: queue[(currentIndex + offset) % queue.length], order: offset });
+  }
+
+  if (upcoming.length === 0) {
+    const empty = document.createElement("li");
+    empty.className = "player__queue-empty";
+    empty.textContent = "No hay próximas canciones.";
+    queueList.replaceChildren(empty);
+    return;
+  }
+
+  const rows = upcoming.map(({ item, order }) => {
+    const li = document.createElement("li");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "player__queue-item";
+    button.setAttribute("aria-label", `Reproducir ${item.title}`);
+
+    const number = document.createElement("span");
+    number.textContent = String(order);
+    const name = document.createElement("span");
+    name.className = "player__queue-name";
+    name.textContent = item.title;
+
+    button.append(number, name);
+    button.addEventListener("click", () => {
+      playQueueIndex(queue.indexOf(item));
+      toggleQueuePanel(false);
+    });
+    li.append(button);
+    return li;
+  });
+
+  queueList.replaceChildren(...rows);
+};
+
+const toggleQueuePanel = (force) => {
+  const open = force ?? queuePanel.hidden;
+  queuePanel.hidden = !open;
+  queueToggle.setAttribute("aria-expanded", String(open));
+  if (open) {
+    renderQueuePanel();
+  }
+};
+
 export const initPlayer = () => {
   if (!player || !audio) {
     return;
@@ -155,6 +259,24 @@ export const initPlayer = () => {
   toggleButton.addEventListener("click", togglePlayback);
   prevButton.addEventListener("click", () => step(-1));
   nextButton.addEventListener("click", () => step(1));
+  queueToggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleQueuePanel();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!player.contains(event.target)) {
+      toggleQueuePanel(false);
+    }
+  });
+
+  player.addEventListener("click", (event) => {
+    if (event.target.closest("button, input, .player__info, .player__queue")) {
+      return;
+    }
+    showView("player");
+    document.dispatchEvent(new CustomEvent("playeropen", { detail: { type: "album" } }));
+  });
 
   progress.addEventListener("input", () => {
     if (Number.isFinite(audio.duration)) {

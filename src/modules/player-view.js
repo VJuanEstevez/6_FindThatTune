@@ -100,20 +100,30 @@ export const initPlayerView = () => {
     return;
   }
 
+  const setDeckType = (type) => {
+    const stages = {
+      vinyl: vinylStage,
+      cassette: cassetteStage,
+      album: albumStage,
+    };
+    Object.entries(stages).forEach(([name, stage]) => {
+      stage.hidden = name !== type;
+    });
+    typeInputs.forEach((input) => {
+      input.checked = input.value === type;
+    });
+  };
+
   typeInputs.forEach((input) => {
     input.addEventListener("change", () => {
-      if (!input.checked) {
-        return;
+      if (input.checked) {
+        setDeckType(input.value);
       }
-      const stages = {
-        vinyl: vinylStage,
-        cassette: cassetteStage,
-        album: albumStage,
-      };
-      Object.entries(stages).forEach(([type, stage]) => {
-        stage.hidden = type !== input.value;
-      });
     });
+  });
+
+  document.addEventListener("playeropen", (event) => {
+    setDeckType(event.detail.type);
   });
 
   deckArtist.addEventListener("click", () => {

@@ -190,11 +190,11 @@
             </div>
           </div>
 
-            <div class="album-grid" data-album-grid>
-              <p class="album-slider__status" role="status">Cargando discos...</p>
-            </div>
+          <div class="album-grid" data-album-grid>
+            <p class="album-slider__status" role="status">Cargando discos...</p>
+          </div>
 
-            <nav class="album-pagination" data-album-pagination aria-label="Paginación de discos"></nav>
+          <nav class="album-pagination" data-album-pagination aria-label="Paginación de discos"></nav>
         </section>
 
         <section class="home" data-view="favorites" aria-labelledby="favorites-title" hidden>
@@ -253,28 +253,27 @@
           <div class="home__heading">
             <div>
               <h2 class="home__title" id="player-title">Reproductor</h2>
-              <p class="home__subtitle">Elige cómo quieres escuchar tu música.</p>
             </div>
-
-            <fieldset class="player-tabs">
-              <legend class="visually-hidden">Tipo de reproductor</legend>
-              <label class="player-tabs__option">
-                <input class="visually-hidden" type="radio" name="player-type" value="vinyl" checked />
-                <span>Vinilo</span>
-              </label>
-              <label class="player-tabs__option">
-                <input class="visually-hidden" type="radio" name="player-type" value="cassette" />
-                <span>Casete</span>
-              </label>
-              <label class="player-tabs__option">
-                <input class="visually-hidden" type="radio" name="player-type" value="album" />
-                <span>Álbum</span>
-              </label>
-            </fieldset>
           </div>
 
           <div class="player-layout">
             <div class="deck" data-deck>
+              <fieldset class="player-tabs">
+                <legend class="visually-hidden">Tipo de reproductor</legend>
+                <label class="player-tabs__option">
+                  <input class="visually-hidden" type="radio" name="player-type" value="vinyl" checked />
+                  <span>Vinilo</span>
+                </label>
+                <label class="player-tabs__option">
+                  <input class="visually-hidden" type="radio" name="player-type" value="cassette" />
+                  <span>Casete</span>
+                </label>
+                <label class="player-tabs__option">
+                  <input class="visually-hidden" type="radio" name="player-type" value="album" />
+                  <span>Álbum</span>
+                </label>
+              </fieldset>
+
               <div class="deck__stage" data-deck-vinyl>
                 <div class="vinyl">
                   <div class="vinyl__disc">
@@ -403,6 +402,18 @@
               <path d="M5 6v12l7-6-7-6Zm8 0v12l7-6-7-6Z" />
             </svg>
           </button>
+          <button class="player__button" type="button" data-player-queue-toggle aria-label="Próximas canciones"
+            aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+              aria-hidden="true" focusable="false">
+              <path d="M4 6h16M4 12h16M4 18h10" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="player__queue" data-player-queue hidden>
+          <p class="player__queue-title">A continuación</p>
+          <ul class="player__queue-list" data-player-queue-list></ul>
         </div>
       </section>
     </div>

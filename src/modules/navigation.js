@@ -15,10 +15,18 @@ const setActiveLink = (activeLink) => {
 };
 
 const setView = (viewName) => {
-  views.forEach((view) => {
-    view.hidden = view.dataset.view !== viewName;
-  });
-  document.dispatchEvent(new CustomEvent("viewchange", { detail: { view: viewName } }));
+  const applyView = () => {
+    views.forEach((view) => {
+      view.hidden = view.dataset.view !== viewName;
+    });
+    document.dispatchEvent(new CustomEvent("viewchange", { detail: { view: viewName } }));
+  };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(applyView);
+  } else {
+    applyView();
+  }
 };
 
 export const showView = (viewName) => {
