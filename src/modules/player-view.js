@@ -8,6 +8,7 @@ import {
   togglePlayback,
 } from "./player.js";
 import { openArtist } from "./artist-modal.js";
+import { refreshMarquee, setMarqueeText } from "./marquee.js";
 
 const deck = document.querySelector("[data-deck]");
 const vinylStage = document.querySelector("[data-deck-vinyl]");
@@ -16,6 +17,8 @@ const albumStage = document.querySelector("[data-deck-album]");
 const vinylLabel = document.querySelector("[data-vinyl-label]");
 const albumPoster = document.querySelector("[data-album-poster]");
 const cassetteTrack = document.querySelector("[data-cassette-track]");
+const cassetteCover = document.querySelector("[data-cassette-cover]");
+const cassetteArtist = document.querySelector("[data-cassette-artist]");
 const deckTitle = document.querySelector("[data-deck-title]");
 const deckArtist = document.querySelector("[data-deck-artist]");
 const toggleButton = document.querySelector("[data-deck-toggle]");
@@ -28,28 +31,30 @@ const PLACEHOLDER =
 const renderUpNext = () => {
   const { items, currentIndex } = getQueue();
 
-  if (items.length < 2) {
+  if (items.length === 0) {
     const empty = document.createElement("li");
     empty.className = "up-next__empty";
-    empty.textContent = "No hay más canciones en la cola.";
+    empty.textContent = "No hay canciones en la cola.";
     upNextList.replaceChildren(empty);
     return;
   }
 
-  const rows = [];
-  for (let offset = 1; offset < items.length; offset += 1) {
-    const index = (currentIndex + offset) % items.length;
-    const item = items[index];
-
+  const rows = items.map((item, index) => {
+    const isCurrent = index === currentIndex;
     const row = document.createElement("li");
+    row.className = isCurrent ? "is-current" : index < currentIndex ? "is-played" : "";
+
     const button = document.createElement("button");
     button.type = "button";
     button.className = "up-next__item";
     button.setAttribute("aria-label", `Reproducir ${item.title}`);
+    if (isCurrent) {
+      button.setAttribute("aria-current", "true");
+    }
 
     const order = document.createElement("span");
     order.className = "up-next__order";
-    order.textContent = String(offset).padStart(2, "0");
+    order.textContent = String(item.rank ?? index + 1).padStart(2, "0");
 
     const cover = document.createElement("img");
     cover.className = "up-next__cover";
@@ -62,18 +67,25 @@ const renderUpNext = () => {
     const info = document.createElement("span");
     info.className = "up-next__info";
     const songTitle = document.createElement("span");
-    songTitle.className = "up-next__title-song";
-    songTitle.textContent = item.title;
+    songTitle.className = "up-next__title-song marquee";
+    setMarqueeText(songTitle, item.title);
     const songArtist = document.createElement("span");
     songArtist.className = "up-next__artist";
     songArtist.textContent = item.artist;
     info.append(songTitle, songArtist);
 
+    if (isCurrent) {
+      const now = document.createElement("span");
+      now.className = "up-next__now";
+      now.textContent = "Suena ahora";
+      info.append(now);
+    }
+
     button.addEventListener("click", () => playQueueIndex(index));
     button.append(order, cover, info);
     row.append(button);
-    rows.push(row);
-  }
+    return row;
+  });
 
   upNextList.replaceChildren(...rows);
 };
@@ -88,7 +100,10 @@ const render = () => {
   vinylLabel.alt = track ? `Portada de ${track.title}` : "";
   albumPoster.src = track?.artwork ?? PLACEHOLDER;
   albumPoster.alt = track ? `Póster del álbum ${track.title}` : "";
-  cassetteTrack.textContent = track?.title ?? "Selecciona una canción";
+  setMarqueeText(cassetteTrack, track?.title ?? "Selecciona una canción");
+  cassetteArtist.textContent = track?.artist ?? "Reproductor";
+  cassetteCover.src = track?.artwork ?? PLACEHOLDER;
+  cassetteCover.alt = track ? `Portada de ${track.title}` : "";
 
   deck.classList.toggle("is-playing", playing);
   toggleButton.setAttribute("aria-label", playing ? "Pausar" : "Reproducir");
@@ -112,6 +127,7 @@ export const initPlayerView = () => {
     typeInputs.forEach((input) => {
       input.checked = input.value === type;
     });
+    refreshMarquee(cassetteTrack);
   };
 
   typeInputs.forEach((input) => {

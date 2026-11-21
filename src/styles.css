@@ -224,6 +224,27 @@ a {
   border-top: 1px solid var(--color-border);
 }
 
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background-color: rgb(0 0 0 / 0.55);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--transition), visibility var(--transition);
+}
+
+.drawer-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+body.drawer-is-open {
+  overflow: hidden;
+}
+
 .nav-list {
   display: grid;
   gap: var(--space-1);
@@ -311,6 +332,26 @@ a {
   background-color: var(--color-header);
   backdrop-filter: blur(0.5rem);
   border-bottom: 1px solid var(--color-border);
+}
+
+.header__menu {
+  display: none;
+  place-items: center;
+  flex: none;
+  width: var(--control-height);
+  height: var(--control-height);
+  margin-right: var(--space-3);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+
+  svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
 }
 
 .header__search {
@@ -525,8 +566,15 @@ a {
 }
 
 .album-slide {
+  display: flex;
   flex: 0 0 100%;
   min-width: 0;
+}
+
+.album-slide .album-card {
+  flex: 1;
+  width: 100%;
+  min-height: 18.75rem;
 }
 
 .album-card {
@@ -588,17 +636,6 @@ a {
   justify-items: start;
   gap: var(--space-2);
   min-width: 0;
-}
-
-.album-card__rank {
-  padding: 0.125rem 0.5rem;
-  border-radius: var(--radius-pill);
-  background-color: var(--color-accent-soft);
-  color: var(--color-accent);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1.5;
 }
 
 .album-card__title {
@@ -879,17 +916,6 @@ a {
   min-width: 0;
 }
 
-.album-tile__rank {
-  padding: 0.125rem 0.5rem;
-  border-radius: var(--radius-pill);
-  background-color: var(--color-accent-soft);
-  color: var(--color-accent);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1.5;
-}
-
 .album-tile__title {
   display: -webkit-box;
   overflow: hidden;
@@ -919,7 +945,7 @@ a {
 
 .track-row {
   display: grid;
-  grid-template-columns: 2.5rem 2rem minmax(0, 1fr) minmax(0, 8rem) 2rem;
+  grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 8rem) 2rem;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
@@ -931,12 +957,6 @@ a {
   &:hover {
     border-color: var(--color-accent);
   }
-}
-
-.track-row__rank {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
 }
 
 .track-row__info {
@@ -1692,7 +1712,7 @@ a {
 
 .vinyl {
   position: relative;
-  width: min(100%, 18rem);
+  width: min(100%, 15.3rem);
   aspect-ratio: 1;
 }
 
@@ -1770,7 +1790,7 @@ a {
   display: grid;
   grid-template-rows: 1fr 1fr;
   gap: var(--space-2);
-  width: min(100%, 23.4rem);
+  width: min(100%, 19.9rem);
   aspect-ratio: 1.6;
   padding: var(--space-3);
   border-radius: var(--radius-md);
@@ -1779,12 +1799,27 @@ a {
 }
 
 .cassette__label {
-  display: grid;
-  align-content: center;
-  gap: 0.125rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   background-color: var(--color-accent-soft);
+}
+
+.cassette__cover {
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background-color: var(--color-surface-raised);
+}
+
+.cassette__details {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
 }
 
 .cassette__brand {
@@ -1798,6 +1833,14 @@ a {
   overflow: hidden;
   font-size: 0.875rem;
   font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cassette__artist {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1858,7 +1901,7 @@ a {
 }
 
 .album-poster {
-  width: min(100%, 18rem);
+  width: min(100%, 15.3rem);
   aspect-ratio: 1;
   padding: var(--space-2);
   border: 1px solid var(--color-border);
@@ -2041,9 +2084,60 @@ a {
   white-space: nowrap;
 }
 
+.up-next__now {
+  color: var(--color-accent);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.up-next li.is-current .up-next__item {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+}
+
+.up-next li.is-current .up-next__order {
+  color: var(--color-accent);
+}
+
+.up-next li.is-played .up-next__item {
+  opacity: 0.6;
+}
+
 @keyframes disc-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   Texto en marquesina cuando no cabe en su espacio
+   ========================================================= */
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee__text {
+  display: inline-block;
+  max-width: none;
+  white-space: nowrap;
+}
+
+.marquee.has-overflow .marquee__text {
+  animation: marquee-scroll 9s ease-in-out infinite alternate;
+}
+
+@keyframes marquee-scroll {
+  0%,
+  12% {
+    transform: translateX(0);
+  }
+
+  88%,
+  100% {
+    transform: translateX(calc(-1 * var(--marquee-offset, 0px)));
   }
 }
 
@@ -2199,6 +2293,10 @@ a {
   white-space: nowrap;
 }
 
+.player__queue-list li.is-past .player__queue-item {
+  opacity: 0.65;
+}
+
 .player__queue-empty {
   color: var(--color-text-muted);
   font-size: 0.875rem;
@@ -2297,42 +2395,46 @@ a {
 
 @media (max-width: 60rem) {
   :root {
-    --size-drawer: 4.5rem;
+    --size-drawer: 0rem;
+  }
+
+  .dashboard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .header__menu {
+    display: grid;
   }
 
   .drawer {
-    padding-inline: var(--space-2);
-    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    width: min(20rem, 85vw);
+    height: 100vh;
+    height: 100dvh;
+    padding-inline: var(--space-3);
+    align-items: stretch;
+    box-shadow: var(--shadow-dialog);
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform var(--transition), visibility var(--transition);
   }
 
-  .drawer__brand {
-    justify-content: center;
-    padding-inline: 0;
+  .drawer.is-open {
+    visibility: visible;
+    transform: translateX(0);
   }
 
-  .drawer__title,
-  .nav-link__label,
-  .settings-button__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
+  .main {
+    overflow-y: auto;
   }
 
-  .drawer__nav,
-  .drawer__footer {
-    width: 100%;
-  }
-
-  .nav-link,
-  .settings-button {
-    justify-content: center;
-    padding-inline: 0;
+  .home[data-view="player"] {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
   }
 }
 
@@ -2420,7 +2522,6 @@ a {
     grid-template-columns: 2.5rem minmax(0, 1fr) 2rem;
   }
 
-  .track-row__rank,
   .track-row__genre {
     display: none;
   }

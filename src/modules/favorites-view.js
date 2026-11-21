@@ -1,6 +1,6 @@
-import { EXTRA_GENRES } from "./albums.js";
 import { createTile, createRow } from "./album-card.js";
 import { getFavorites, subscribeFavorites } from "./favorites.js";
+import { fillGenreSelect, subscribeGenres } from "./genres.js";
 
 const grid = document.querySelector("[data-favorites-grid]");
 const genreSelect = document.querySelector("[data-favorites-genre]");
@@ -38,27 +38,7 @@ const filteredItems = () => {
 };
 
 const populateGenres = () => {
-  const genres = [
-    ...new Set([
-      ...itemsByType().map((item) => item.genre).filter(Boolean),
-      ...EXTRA_GENRES,
-    ]),
-  ].sort((a, b) => a.localeCompare(b, "es"));
-
-  if (!genres.includes(state.genre)) {
-    state.genre = "all";
-  }
-
-  const options = [create("option", "", "Todos los géneros")];
-  options[0].value = "all";
-  genres.forEach((genre) => {
-    const option = create("option", "", genre);
-    option.value = genre;
-    options.push(option);
-  });
-
-  genreSelect.replaceChildren(...options);
-  genreSelect.value = state.genre;
+  state.genre = fillGenreSelect(genreSelect, state.genre);
 };
 
 const render = () => {
@@ -111,5 +91,6 @@ export const initFavoritesView = () => {
   });
 
   subscribeFavorites(render);
+  subscribeGenres(populateGenres);
   render();
 };

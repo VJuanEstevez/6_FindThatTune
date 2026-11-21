@@ -1,11 +1,7 @@
-import {
-  EXTRA_GENRES,
-  fetchTrendingAlbums,
-  fetchTrendingSongs,
-  searchCatalog,
-} from "./albums.js";
+import { fetchTrendingAlbums, fetchTrendingSongs, searchCatalog } from "./albums.js";
 import { createTile, createRow, syncFavoriteButtons } from "./album-card.js";
 import { subscribeFavorites } from "./favorites.js";
+import { addGenres, fillGenreSelect, subscribeGenres } from "./genres.js";
 
 const PAGE_SIZE = 12;
 
@@ -130,27 +126,7 @@ const changePage = (page) => {
 };
 
 const populateGenres = () => {
-  const genres = [
-    ...new Set([
-      ...data[state.type].map((item) => item.genre).filter(Boolean),
-      ...EXTRA_GENRES,
-    ]),
-  ].sort((a, b) => a.localeCompare(b, "es"));
-
-  if (!genres.includes(state.genre)) {
-    state.genre = "all";
-  }
-
-  const options = [create("option", "", "Todos los géneros")];
-  options[0].value = "all";
-  genres.forEach((genre) => {
-    const option = create("option", "", genre);
-    option.value = genre;
-    options.push(option);
-  });
-
-  genreSelect.replaceChildren(...options);
-  genreSelect.value = state.genre;
+  addGenres(data[state.type].map((item) => item.genre));
 };
 
 const showLoadError = () => {
@@ -240,6 +216,10 @@ export const initSearchView = () => {
     if (loaded) {
       syncFavoriteButtons(grid);
     }
+  });
+
+  subscribeGenres(() => {
+    state.genre = fillGenreSelect(genreSelect, state.genre);
   });
 
   document.addEventListener("viewchange", (event) => {

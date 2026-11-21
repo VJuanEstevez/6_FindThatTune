@@ -103,11 +103,7 @@ export const syncFavoriteButtons = (root = document) => {
 export const createTile = (item, queue = [item]) => {
   const tile = create("article", "album-tile");
   const body = create("div", "album-tile__body");
-  body.append(
-    create("span", "album-tile__rank", `#${item.rank}`),
-    create("h3", "album-tile__title", item.title),
-    createArtistButton(item),
-  );
+  body.append(create("h3", "album-tile__title", item.title), createArtistButton(item));
   tile.append(createCover(item, "tile"), body, createFavoriteButton(item));
   attachPlay(tile, item, queue);
   return tile;
@@ -122,7 +118,6 @@ export const createRow = (item, queue = [item]) => {
   );
   row.append(
     createCover(item, "row"),
-    create("span", "track-row__rank", `#${item.rank}`),
     info,
     create("span", "track-row__genre", item.genre),
     createFavoriteButton(item),

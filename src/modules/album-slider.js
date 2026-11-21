@@ -56,11 +56,7 @@ const createSlide = (album, index, queue) => {
   });
 
   const body = create("div", "album-card__body");
-  body.append(
-    create("span", "album-card__rank", `#${album.rank}`),
-    create("h3", "album-card__title", album.title),
-    artistButton,
-  );
+  body.append(create("h3", "album-card__title", album.title), artistButton);
 
   const meta = create("dl", "album-card__meta");
   const genre = document.createElement("div");

@@ -1,6 +1,7 @@
 import { getItemId } from "./favorites.js";
 import { openArtist } from "./artist-modal.js";
 import { showView } from "./navigation.js";
+import { setMarqueeText } from "./marquee.js";
 
 const player = document.querySelector("[data-player]");
 const cover = document.querySelector("[data-player-cover]");
@@ -45,7 +46,7 @@ const getAlbumTracks = async (album) => {
     .map((result, index) => ({
       id: result.trackId,
       type: "songs",
-      rank: index + 1,
+      rank: Number(result.trackNumber) || index + 1,
       title: result.trackName,
       artist: result.artistName ?? album.artist,
       artistId: result.artistId ?? album.artistId,
@@ -86,7 +87,7 @@ const setPlaying = (playing) => {
 };
 
 const updateInfo = (item) => {
-  title.textContent = item.title;
+  setMarqueeText(title, item.title);
   artist.textContent = item.artist;
   cover.src = item.artwork;
   cover.alt = `Portada de ${item.title}`;
@@ -105,7 +106,7 @@ const loadAndPlay = async () => {
   const requestId = ++playRequest;
   audio.pause();
   setPlaying(false);
-  title.textContent = currentItem.title;
+  setMarqueeText(title, currentItem.title);
 
   try {
     const url = await getPreviewUrl(currentItem);
@@ -204,35 +205,58 @@ export const playQueueIndex = (index) => {
 };
 
 const renderQueuePanel = () => {
-  const upcoming = [];
-  for (let offset = 1; offset <= Math.min(5, queue.length - 1); offset += 1) {
-    upcoming.push({ item: queue[(currentIndex + offset) % queue.length], order: offset });
+  const indices = [];
+  const seen = new Set();
+  const pastIndices = new Set();
+  const addIndex = (index) => {
+    if (!seen.has(index)) {
+      seen.add(index);
+      indices.push(index);
+    }
+  };
+
+  const previousCount = Math.min(2, Math.max(0, queue.length - 1));
+  for (let offset = previousCount; offset >= 1; offset -= 1) {
+    const index = (currentIndex - offset + queue.length) % queue.length;
+    pastIndices.add(index);
+    addIndex(index);
   }
 
-  if (upcoming.length === 0) {
+  const upcomingCount = Math.min(5, Math.max(0, queue.length - 1));
+  for (let offset = 1; offset <= upcomingCount; offset += 1) {
+    addIndex((currentIndex + offset) % queue.length);
+  }
+
+  if (indices.length === 0) {
     const empty = document.createElement("li");
     empty.className = "player__queue-empty";
-    empty.textContent = "No hay próximas canciones.";
+    empty.textContent = "No hay más canciones en la cola.";
     queueList.replaceChildren(empty);
     return;
   }
 
-  const rows = upcoming.map(({ item, order }) => {
+  const rows = indices.map((index) => {
+    const item = queue[index];
+    const isPast = pastIndices.has(index);
     const li = document.createElement("li");
+    if (isPast) {
+      li.className = "is-past";
+    }
+
     const button = document.createElement("button");
     button.type = "button";
     button.className = "player__queue-item";
     button.setAttribute("aria-label", `Reproducir ${item.title}`);
 
     const number = document.createElement("span");
-    number.textContent = String(order);
+    number.textContent = String(item.rank ?? index + 1).padStart(2, "0");
     const name = document.createElement("span");
-    name.className = "player__queue-name";
-    name.textContent = item.title;
+    name.className = "player__queue-name marquee";
+    setMarqueeText(name, item.title);
 
     button.append(number, name);
     button.addEventListener("click", () => {
-      playQueueIndex(queue.indexOf(item));
+      playQueueIndex(index);
       toggleQueuePanel(false);
     });
     li.append(button);
