@@ -122,6 +122,14 @@
           </svg>
         </button>
 
+        <span class="header__logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" focusable="false">
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="12" r="5" />
+            <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+          </svg>
+        </span>
+
         <search class="header__search">
           <form class="search-form" action="#" method="get">
             <label class="visually-hidden" for="song-search">Buscar canciones</label>
@@ -141,10 +149,13 @@
         <section class="home" data-view="home" aria-labelledby="home-title">
           <div class="home__heading">
             <div>
-              <h2 class="home__title" id="home-title">Esto es <span>Find That Song</span></h2>
-              <p class="home__subtitle">Escucha tu música favorita en cualquier momento.</p>
+              <h2 class="home__title" id="home-title">Bienvenido a <span>Find That Song</span></h2>
+              <p class="home__subtitle">De los clásicos que hicieron historia a los éxitos de hoy: canciones, álbumes y
+                artistas en un mismo lugar.</p>
             </div>
           </div>
+
+          <h3 class="album-slider__heading">Artistas en tendencia</h3>
 
           <div class="album-slider" data-album-slider>
             <p class="album-slider__status" role="status">Cargando discos...</p>
@@ -154,23 +165,42 @@
         <section class="home" data-view="search" aria-labelledby="search-title" hidden>
           <div class="home__heading">
             <div>
-              <h2 class="home__title" id="search-title">Discos en tendencia</h2>
-              <p class="home__subtitle">Lo más escuchado ahora del momento.</p>
+              <h2 class="home__title" id="search-title">Artistas en tendencia</h2>
+              <p class="home__subtitle">Los álbumes de los artistas más escuchados ahora.</p>
             </div>
 
             <div class="search-filters">
               <label class="search-field">
-                <span class="search-field__label">Género</span>
+                <span class="search-field__label">Género / Listado</span>
                 <select class="search-field__select" data-genre-select>
-                  <option value="all">Todos los géneros</option>
+                  <optgroup label="Listado">
+                    <option value="list:top">Top</option>
+                    <option value="list:news">Novedades</option>
+                    <option value="list:artists" selected>Artistas en tendencia</option>
+                    <option value="list:classics">Clásicos por década</option>
+                  </optgroup>
+                  <optgroup label="Géneros">
+                    <option value="all">Todos los géneros</option>
+                  </optgroup>
                 </select>
               </label>
 
               <label class="search-field">
                 <span class="search-field__label">Canciones / Álbumes</span>
-                <select class="search-field__select" data-type-select>
-                  <option value="albums">Álbumes</option>
+                <select class="search-field__select" data-entity-select>
+                  <option value="albums" selected>Álbumes</option>
                   <option value="songs">Canciones</option>
+                </select>
+              </label>
+
+              <label class="search-field" data-decade-field hidden>
+                <span class="search-field__label">Década</span>
+                <select class="search-field__select" data-decade-select>
+                  <option value="all">Todas las décadas</option>
+                  <option value="70s">Años 70</option>
+                  <option value="80s">Años 80</option>
+                  <option value="90s">Años 90</option>
+                  <option value="2000s">Años 2000</option>
                 </select>
               </label>
 
@@ -267,7 +297,7 @@
           </div>
 
           <div class="player-layout">
-            <div class="deck" data-deck>
+            <div class="deck ambient-blur" data-deck>
               <fieldset class="player-tabs">
                 <legend class="visually-hidden">Tipo de reproductor</legend>
                 <label class="player-tabs__option">
@@ -327,7 +357,17 @@
               </div>
 
               <div class="deck__info">
-                <p class="deck__title" data-deck-title>Selecciona una canción</p>
+                <div class="deck__heading">
+                  <p class="deck__title" data-deck-title>Selecciona una canción</p>
+                  <button class="favorite-button deck__favorite" type="button" data-deck-favorite
+                    aria-label="Añadir a favoritos" aria-pressed="false" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                      <path
+                        d="M20.8 5.6a5.3 5.3 0 0 0-7.5 0L12 6.9l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5l1.3 1.3L12 22l7.5-7.6 1.3-1.3a5.3 5.3 0 0 0 0-7.5Z" />
+                    </svg>
+                  </button>
+                </div>
                 <button class="deck__artist" type="button" data-deck-artist>Reproductor</button>
                 <div class="deck__controls">
                   <button class="deck__button" type="button" data-deck-prev aria-label="Canción anterior">
@@ -367,21 +407,65 @@
           <div class="home__heading">
             <div>
               <h2 class="home__title" id="game-title">Adivina la canción</h2>
-              <p class="home__subtitle">Un nuevo reto musical está en camino.</p>
+              <p class="home__subtitle">Escucha un fragmento y adivina de qué canción se trata.</p>
+            </div>
+            <div class="game__header-actions">
+              <div class="game__header-buttons">
+                <button class="game__button" type="button" data-game-restart hidden>Comenzar de nuevo</button>
+                <button class="game__button" type="button" data-game-settings-open>Ajustes</button>
+                <button class="game__button" type="button" data-game-scores-open>Clasificación</button>
+              </div>
             </div>
           </div>
 
-          <div class="construction-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-              stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <path
-                d="M6.5 8h11a4 4 0 0 1 3.9 3.1l1 5A2.5 2.5 0 0 1 20 19a2.5 2.5 0 0 1-2-1l-1.5-2H7.5L6 18a2.5 2.5 0 0 1-2 1 2.5 2.5 0 0 1-2.4-2.9l1-5A4 4 0 0 1 6.5 8Z" />
-              <path d="M8 11v3M6.5 12.5h3" />
-              <circle cx="16" cy="12" r="0.9" fill="currentColor" stroke="none" />
-              <circle cx="18" cy="14.5" r="0.9" fill="currentColor" stroke="none" />
-            </svg>
-            <h3>En construcción</h3>
-            <p>Estamos preparando el juego. Vuelve pronto para poner a prueba tu oído.</p>
+          <div class="game">
+            <div class="game__start" data-game-start-area>
+              <h3 class="game__start-title">¿Cómo jugar?</h3>
+              <p class="game__start-text">
+                Escucharás un fragmento de una canción. Elige entre cuatro opciones cuál es,
+                configurable por género o artista. Después podrás volver a escuchar el fragmento
+                y verás la respuesta con el álbum completo.
+              </p>
+              <button class="game__button game__button--primary game__start-button" type="button" data-game-play>
+                Comenzar juego
+              </button>
+            </div>
+
+            <div class="game__board" data-game-board hidden>
+              <p class="game__status" data-game-status role="status">Cargando...</p>
+
+              <div class="game__round" data-game-round hidden>
+                <div class="game__round-head">
+                  <p class="game__round-number" data-game-round-number hidden>Ronda 1 de 10</p>
+                  <h3 class="game__question">¿Qué canción suena?</h3>
+                  <progress class="game__progress" data-game-progress max="100" value="0"></progress>
+                  <button class="game__button" type="button" data-game-repeat>Repetir fragmento</button>
+                </div>
+
+                <div class="game__play-area">
+                  <div class="game__options" data-game-options></div>
+
+                  <div class="game__result" data-game-result hidden>
+                    <div class="game__answer">
+                      <img class="game__cover" data-game-cover alt="" width="150" height="150" />
+                      <div class="game__answer-info">
+                        <h4 class="game__answer-title" data-game-answer-title></h4>
+                        <p class="game__answer-artist" data-game-answer-artist></p>
+                        <p class="game__answer-album" data-game-answer-album></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="game__feedback" data-game-feedback hidden>
+            <p class="game__message" data-game-message role="status" hidden></p>
+            <button class="game__button game__button--primary game__next" type="button" data-game-next hidden>
+              Siguiente ronda
+            </button>
           </div>
         </section>
       </main>
@@ -447,29 +531,42 @@
       </button>
     </div>
 
-    <fieldset class="view-switch">
-      <legend class="visually-hidden">Vista de la discografía</legend>
-      <label class="view-switch__option">
-        <input class="visually-hidden" type="radio" name="artist-view-mode" value="cards" checked />
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"
-          aria-hidden="true" focusable="false">
-          <rect x="3" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="3" width="7" height="7" rx="1" />
-          <rect x="3" y="14" width="7" height="7" rx="1" />
-          <rect x="14" y="14" width="7" height="7" rx="1" />
-        </svg>
+    <div class="artist-dialog__toolbar">
+      <fieldset class="view-switch">
+        <legend class="visually-hidden">Vista de la discografía</legend>
+        <label class="view-switch__option">
+          <input class="visually-hidden" type="radio" name="artist-view-mode" value="cards" checked />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"
+            aria-hidden="true" focusable="false">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+        </label>
+        <label class="view-switch__option">
+          <input class="visually-hidden" type="radio" name="artist-view-mode" value="list" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+            aria-hidden="true" focusable="false">
+            <path d="M8 6h13M8 12h13M8 18h13" />
+            <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
+            <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
+            <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
+          </svg>
+        </label>
+      </fieldset>
+
+      <label class="search-field artist-dialog__sort">
+        <span class="search-field__label">Ordenar</span>
+        <select class="search-field__select" data-artist-sort>
+          <option value="default">Predeterminado</option>
+          <option value="title-asc">Nombre (A-Z)</option>
+          <option value="title-desc">Nombre (Z-A)</option>
+          <option value="year-desc">Año (más reciente)</option>
+          <option value="year-asc">Año (más antiguo)</option>
+        </select>
       </label>
-      <label class="view-switch__option">
-        <input class="visually-hidden" type="radio" name="artist-view-mode" value="list" />
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
-          aria-hidden="true" focusable="false">
-          <path d="M8 6h13M8 12h13M8 18h13" />
-          <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
-          <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
-          <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
-        </svg>
-      </label>
-    </fieldset>
+    </div>
 
     <div class="artist-dialog__content" data-artist-content>
       <p class="artist-dialog__status" role="status">Cargando discografía...</p>
@@ -607,6 +704,124 @@
     </div>
 
     <p class="theme-dialog__hint">Los cambios se guardan automáticamente.</p>
+  </dialog>
+
+  <dialog class="game-dialog" id="game-settings-dialog" aria-labelledby="game-settings-title">
+    <div class="game-dialog__header">
+      <h2 class="game-dialog__title" id="game-settings-title">Ajustes del juego</h2>
+      <button class="game-dialog__close" type="button" data-game-settings-close aria-label="Cerrar ajustes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </div>
+
+    <fieldset class="game__setup">
+      <legend class="visually-hidden">Opciones del juego</legend>
+      <label class="search-field">
+        <span class="search-field__label">Nombre del jugador</span>
+        <input class="search-field__select" data-game-player-name type="text" placeholder="Tu nombre"
+          autocomplete="off" />
+      </label>
+      <label class="search-field">
+        <span class="search-field__label">Buscar por</span>
+        <select class="search-field__select" data-game-mode>
+          <option value="genre">Género</option>
+          <option value="artist">Artista</option>
+        </select>
+      </label>
+      <label class="search-field" data-game-genre-field>
+        <span class="search-field__label">Género</span>
+        <select class="search-field__select" data-game-genre>
+          <option value="all">Todos los géneros</option>
+        </select>
+      </label>
+      <label class="search-field" data-game-artist-field hidden>
+        <span class="search-field__label">Artista</span>
+        <input class="search-field__select" data-game-artist type="text" placeholder="Escribe un artista"
+          autocomplete="off" />
+      </label>
+      <label class="search-field">
+        <span class="search-field__label">Duración</span>
+        <select class="search-field__select" data-game-duration>
+          <option value="3">3 segundos</option>
+          <option value="5" selected>5 segundos</option>
+          <option value="10">10 segundos</option>
+        </select>
+      </label>
+      <label class="search-field">
+        <span class="search-field__label">Número de rondas</span>
+        <select class="search-field__select" data-game-total-rounds>
+          <option value="5">5 rondas</option>
+          <option value="10" selected>10 rondas</option>
+          <option value="15">15 rondas</option>
+          <option value="20">20 rondas</option>
+        </select>
+      </label>
+      <button class="game__button game__button--primary" type="button" data-game-start>Comenzar</button>
+    </fieldset>
+  </dialog>
+
+  <dialog class="game-dialog" id="game-scores-dialog" aria-labelledby="game-scores-title">
+    <div class="game-dialog__header">
+      <h2 class="game-dialog__title" id="game-scores-title">Clasificación</h2>
+      <button class="game-dialog__close" type="button" data-game-scores-close aria-label="Cerrar clasificación">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </div>
+
+    <section class="scores-panel" aria-labelledby="game-scores-title">
+      <header class="scores-panel__header">
+        <p class="scores-panel__player" data-game-player>Jugador</p>
+        <h3 class="scores-panel__title">Resumen</h3>
+      </header>
+
+      <dl class="scores-panel__summary" data-game-summary></dl>
+
+      <div class="scores-panel__table">
+        <table class="scores-panel__table-element">
+          <caption class="visually-hidden">Historial de rondas del juego</caption>
+          <thead>
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Canción</th>
+              <th scope="col">Modo</th>
+              <th scope="col">Resultado</th>
+            </tr>
+          </thead>
+          <tbody data-game-history></tbody>
+        </table>
+      </div>
+
+      <footer class="scores-panel__footer">
+        <button class="scores-panel__reset" type="button" data-game-reset>Reiniciar clasificación</button>
+      </footer>
+    </section>
+  </dialog>
+
+  <dialog class="game-dialog game-dialog--confirm" id="game-confirm-dialog" aria-labelledby="game-confirm-title">
+    <div class="game-dialog__header">
+      <h2 class="game-dialog__title" id="game-confirm-title">¿Comenzar de nuevo?</h2>
+      <button class="game-dialog__close" type="button" data-game-confirm-cancel aria-label="Cancelar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </div>
+
+    <p class="game-dialog__text" data-game-confirm-text>Se reiniciará la cuenta de rondas.</p>
+
+    <div class="game-dialog__actions">
+      <button class="game__button" type="button" data-game-confirm-cancel>Cancelar</button>
+      <button class="game__button game__button--primary" type="button" data-game-confirm-accept>
+        Comenzar
+      </button>
+    </div>
   </dialog>
 
   <script type="module" src="/main.js"></script>

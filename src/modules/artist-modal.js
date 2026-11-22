@@ -3,10 +3,12 @@ const artistTitle = document.querySelector("#artist-dialog-title");
 const content = document.querySelector("[data-artist-content]");
 const closeButton = document.querySelector("[data-artist-close]");
 const viewInputs = document.querySelectorAll('input[name="artist-view-mode"]');
+const sortSelect = document.querySelector("[data-artist-sort]");
 
 const cache = new Map();
 let albums = [];
 let mode = "cards";
+let sort = "default";
 
 const create = (tag, className, text) => {
   const element = document.createElement(tag);
@@ -104,16 +106,34 @@ const createAlbumButton = (album, collection) => {
   return button;
 };
 
+const sortedAlbums = () => {
+  const collection = [...albums];
+
+  switch (sort) {
+    case "title-asc":
+      return collection.sort((a, b) => a.title.localeCompare(b.title, "es"));
+    case "title-desc":
+      return collection.sort((a, b) => b.title.localeCompare(a.title, "es"));
+    case "year-desc":
+      return collection.sort((a, b) => Number(b.releaseDate) - Number(a.releaseDate));
+    case "year-asc":
+      return collection.sort((a, b) => Number(a.releaseDate) - Number(b.releaseDate));
+    default:
+      return collection;
+  }
+};
+
 const renderAlbums = () => {
   if (albums.length === 0) {
     return;
   }
 
+  const collection = sortedAlbums();
   const list = create("div", "artist-dialog__list");
   if (mode === "cards") {
     list.classList.add("artist-dialog__list--grid");
   }
-  list.append(...albums.map((album) => createAlbumButton(album, albums)));
+  list.append(...collection.map((album) => createAlbumButton(album, collection)));
   content.replaceChildren(list);
 };
 
@@ -151,6 +171,11 @@ export const initArtistModal = () => {
       mode = input.value;
       renderAlbums();
     });
+  });
+
+  sortSelect?.addEventListener("change", () => {
+    sort = sortSelect.value;
+    renderAlbums();
   });
 
   closeButton?.addEventListener("click", () => dialog.close());

@@ -1,4 +1,4 @@
-import { fetchTrendingAlbums } from "./albums.js";
+import { fetchTrendingArtists } from "./albums.js";
 import { playTrack } from "./player.js";
 import { openArtist } from "./artist-modal.js";
 
@@ -34,7 +34,8 @@ const createIcon = (paths) => {
 
 const createSlide = (album, index, queue) => {
   const slide = create("li", "album-slide");
-  const card = create("article", "album-card");
+  const card = create("article", "album-card ambient-blur");
+  card.style.setProperty("--ambient-image", `url("${album.artwork}")`);
 
   const cover = document.createElement("span");
   cover.className = "album-cover-frame album-cover-frame--feature";
@@ -209,7 +210,7 @@ const loadAlbums = async () => {
   showStatus("Cargando discos...");
 
   try {
-    albums = (await fetchTrendingAlbums()).slice(0, 10);
+    albums = await fetchTrendingArtists(15);
     render();
     syncAutoplay();
   } catch {

@@ -191,6 +191,12 @@ export const togglePlayback = () => {
 
 export const skipTrack = (direction) => step(direction);
 
+export const pausePlayback = () => {
+  if (!audio.paused) {
+    audio.pause();
+  }
+};
+
 export const getQueue = () => ({ items: queue, currentIndex });
 
 export const playQueueIndex = (index) => {

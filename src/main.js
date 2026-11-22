@@ -13,6 +13,7 @@ import { initFavoritesView } from "./modules/favorites-view.js";
 import { initPlayer } from "./modules/player.js";
 import { initPlayerView } from "./modules/player-view.js";
 import { initArtistModal } from "./modules/artist-modal.js";
+import { initGame } from "./modules/game.js";
 
 initFavorites();
 initMarquee();
@@ -27,4 +28,5 @@ initSearchView();
 initFavoritesView();
 initPlayerView();
 initGridColumns();
+initGame();
 loadGenres();

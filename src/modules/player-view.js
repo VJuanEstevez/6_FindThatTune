@@ -9,8 +9,10 @@ import {
 } from "./player.js";
 import { openArtist } from "./artist-modal.js";
 import { refreshMarquee, setMarqueeText } from "./marquee.js";
+import { isFavorite, subscribeFavorites, toggleFavorite } from "./favorites.js";
 
 const deck = document.querySelector("[data-deck]");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const vinylStage = document.querySelector("[data-deck-vinyl]");
 const cassetteStage = document.querySelector("[data-deck-cassette]");
 const albumStage = document.querySelector("[data-deck-album]");
@@ -21,6 +23,7 @@ const cassetteCover = document.querySelector("[data-cassette-cover]");
 const cassetteArtist = document.querySelector("[data-cassette-artist]");
 const deckTitle = document.querySelector("[data-deck-title]");
 const deckArtist = document.querySelector("[data-deck-artist]");
+const deckFavorite = document.querySelector("[data-deck-favorite]");
 const toggleButton = document.querySelector("[data-deck-toggle]");
 const typeInputs = document.querySelectorAll('input[name="player-type"]');
 const upNextList = document.querySelector("[data-up-next]");
@@ -90,6 +93,19 @@ const renderUpNext = () => {
   upNextList.replaceChildren(...rows);
 };
 
+const syncFavoriteButton = () => {
+  const track = getCurrentTrack();
+  const active = Boolean(track) && isFavorite(track);
+
+  deckFavorite.disabled = !track;
+  deckFavorite.classList.toggle("is-active", active);
+  deckFavorite.setAttribute("aria-pressed", String(active));
+  deckFavorite.setAttribute(
+    "aria-label",
+    `${active ? "Quitar de favoritos" : "Añadir a favoritos"}: ${track?.title ?? ""}`,
+  );
+};
+
 const render = () => {
   const track = getCurrentTrack();
   const playing = isPlaying();
@@ -105,8 +121,10 @@ const render = () => {
   cassetteCover.src = track?.artwork ?? PLACEHOLDER;
   cassetteCover.alt = track ? `Portada de ${track.title}` : "";
 
+  deck.style.setProperty("--ambient-image", `url("${track?.artwork ?? PLACEHOLDER}")`);
   deck.classList.toggle("is-playing", playing);
   toggleButton.setAttribute("aria-label", playing ? "Pausar" : "Reproducir");
+  syncFavoriteButton();
   renderUpNext();
 };
 
@@ -115,19 +133,35 @@ export const initPlayerView = () => {
     return;
   }
 
+  let activeType = null;
+
   const setDeckType = (type) => {
+    if (type === activeType) {
+      return;
+    }
+
     const stages = {
       vinyl: vinylStage,
       cassette: cassetteStage,
       album: albumStage,
     };
-    Object.entries(stages).forEach(([name, stage]) => {
-      stage.hidden = name !== type;
-    });
-    typeInputs.forEach((input) => {
-      input.checked = input.value === type;
-    });
-    refreshMarquee(cassetteTrack);
+
+    const applyType = () => {
+      Object.entries(stages).forEach(([name, stage]) => {
+        stage.hidden = name !== type;
+      });
+      typeInputs.forEach((input) => {
+        input.checked = input.value === type;
+      });
+      activeType = type;
+      refreshMarquee(cassetteTrack);
+    };
+
+    if (document.startViewTransition && !reducedMotion.matches && activeType !== null) {
+      document.startViewTransition(applyType);
+    } else {
+      applyType();
+    }
   };
 
   typeInputs.forEach((input) => {
@@ -148,6 +182,15 @@ export const initPlayerView = () => {
       openArtist(track.artist, track.artistId);
     }
   });
+
+  deckFavorite.addEventListener("click", () => {
+    const track = getCurrentTrack();
+    if (track) {
+      toggleFavorite(track);
+    }
+  });
+
+  subscribeFavorites(syncFavoriteButton);
 
   toggleButton.addEventListener("click", togglePlayback);
   document.querySelector("[data-deck-prev]").addEventListener("click", () => skipTrack(-1));

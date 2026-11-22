@@ -1,4 +1,14 @@
-import { fetchTrendingAlbums, fetchTrendingSongs, searchCatalog } from "./albums.js";
+import {
+  fetchAlbumChart,
+  fetchClassicAlbums,
+  fetchClassicSongs,
+  fetchNewAlbums,
+  fetchNewSongs,
+  fetchSongChart,
+  fetchTrendingArtists,
+  fetchTrendingSongArtists,
+  searchCatalog,
+} from "./albums.js";
 import { createTile, createRow, syncFavoriteButtons } from "./album-card.js";
 import { subscribeFavorites } from "./favorites.js";
 import { addGenres, fillGenreSelect, subscribeGenres } from "./genres.js";
@@ -8,17 +18,32 @@ const PAGE_SIZE = 12;
 const grid = document.querySelector("[data-album-grid]");
 const pagination = document.querySelector("[data-album-pagination]");
 const genreSelect = document.querySelector("[data-genre-select]");
-const typeSelect = document.querySelector("[data-type-select]");
+const entitySelect = document.querySelector("[data-entity-select]");
+const decadeSelect = document.querySelector("[data-decade-select]");
+const decadeField = document.querySelector("[data-decade-field]");
 const viewInputs = document.querySelectorAll('input[name="view-mode"]');
 
-const data = { albums: [], songs: [] };
-const state = { type: "albums", genre: "all", mode: "cards", query: "" };
+const LIST_OPTIONS = [
+  ["top", "Top"],
+  ["news", "Novedades"],
+  ["artists", "Artistas en tendencia"],
+  ["classics", "Clásicos por década"],
+];
 
+const state = {
+  selection: "list:artists",
+  entity: "albums",
+  category: "artists",
+  decade: "all",
+  genre: "all",
+  mode: "cards",
+  query: "",
+};
+
+let items = [];
 let currentPage = 1;
 let loaded = false;
 let loadRequest = 0;
-
-const fetchers = { albums: fetchTrendingAlbums, songs: fetchTrendingSongs };
 
 const create = (tag, className, text) => {
   const element = document.createElement(tag);
@@ -37,8 +62,19 @@ const createIcon = (paths) => {
   return wrapper.firstElementChild;
 };
 
+const buildListingGroup = () => {
+  const group = document.createElement("optgroup");
+  group.label = "Listado";
+  LIST_OPTIONS.forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = `list:${value}`;
+    option.textContent = label;
+    group.append(option);
+  });
+  return group;
+};
+
 const filteredItems = () => {
-  const items = data[state.type];
   if (state.genre === "all") {
     return items;
   }
@@ -126,7 +162,7 @@ const changePage = (page) => {
 };
 
 const populateGenres = () => {
-  addGenres(data[state.type].map((item) => item.genre));
+  addGenres(items.map((item) => item.genre));
 };
 
 const showLoadError = () => {
@@ -144,28 +180,42 @@ const showLoadError = () => {
   grid.replaceChildren(status);
 };
 
+const LIST_FETCHERS = {
+  albums: {
+    top: () => fetchAlbumChart(50),
+    news: () => fetchNewAlbums(100),
+    artists: () => fetchTrendingArtists(100),
+    classics: () => fetchClassicAlbums(state.decade, 100),
+  },
+  songs: {
+    top: () => fetchSongChart(50),
+    news: () => fetchNewSongs(100),
+    artists: () => fetchTrendingSongArtists(100),
+    classics: () => fetchClassicSongs(state.decade, 100),
+  },
+};
+
 const loadResults = async () => {
   const requestId = ++loadRequest;
   showStatus("Cargando discos...");
 
   try {
-    const items = state.query
-      ? await searchCatalog(state.query, state.type)
-      : state.genre !== "all"
-        ? await searchCatalog(state.genre, state.type)
-        : await fetchers[state.type]();
+    const catalog =
+      state.query || state.genre !== "all"
+        ? await searchCatalog(state.query || state.genre, state.entity)
+        : await LIST_FETCHERS[state.entity][state.category]();
 
     if (requestId !== loadRequest) {
       return;
     }
 
-    data[state.type] = items;
+    items = catalog;
     currentPage = 1;
     populateGenres();
     renderPage();
     loaded = true;
   } catch {
-    data[state.type] = [];
+    items = [];
     showLoadError();
   }
 };
@@ -173,6 +223,7 @@ const loadResults = async () => {
 export const setSearchQuery = (query) => {
   state.query = query.trim();
   state.genre = "all";
+  state.selection = "all";
   genreSelect.value = "all";
   loadResults();
 };
@@ -186,18 +237,36 @@ export const clearSearchQuery = () => {
 };
 
 export const initSearchView = () => {
-  if (!grid || !pagination || !genreSelect || !typeSelect) {
+  if (!grid || !pagination || !genreSelect) {
     return;
   }
 
-  typeSelect.addEventListener("change", () => {
-    state.type = typeSelect.value;
+  state.selection = fillGenreSelect(genreSelect, state.selection, [buildListingGroup()]);
+  decadeField.hidden = state.category !== "classics";
+
+  entitySelect?.addEventListener("change", () => {
+    state.entity = entitySelect.value;
+    loadResults();
+  });
+
+  decadeSelect?.addEventListener("change", () => {
+    state.decade = decadeSelect.value;
     loadResults();
   });
 
   genreSelect.addEventListener("change", () => {
-    state.genre = genreSelect.value;
+    const value = genreSelect.value;
+    state.selection = value;
     state.query = "";
+
+    if (value.startsWith("list:")) {
+      state.category = value.slice(5);
+      state.genre = "all";
+      decadeField.hidden = state.category !== "classics";
+    } else {
+      state.genre = value;
+    }
+
     loadResults();
   });
 
@@ -219,7 +288,7 @@ export const initSearchView = () => {
   });
 
   subscribeGenres(() => {
-    state.genre = fillGenreSelect(genreSelect, state.genre);
+    state.selection = fillGenreSelect(genreSelect, state.selection, [buildListingGroup()]);
   });
 
   document.addEventListener("viewchange", (event) => {

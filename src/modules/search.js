@@ -1,5 +1,8 @@
 import { showView } from "./navigation.js";
 import { clearSearchQuery, setSearchQuery } from "./search-view.js";
+import { fetchTrendingSongs } from "./albums.js";
+import { getGenres } from "./genres.js";
+import { initGhostAutocomplete } from "./ghost-autocomplete.js";
 
 const DEBOUNCE_DELAY = 350;
 
@@ -12,6 +15,15 @@ export const initSearch = () => {
   }
 
   let timer = null;
+  let artists = [];
+
+  fetchTrendingSongs()
+    .then((songs) => {
+      artists = [...new Set(songs.map((song) => song.artist).filter(Boolean))];
+    })
+    .catch(() => {});
+
+  initGhostAutocomplete(input, () => [...new Set([...artists, ...getGenres()])]);
 
   form.addEventListener("submit", (event) => event.preventDefault());
 
