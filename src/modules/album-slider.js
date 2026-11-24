@@ -201,7 +201,9 @@ const render = () => {
   const controls = create("div", "album-slider__controls");
   controls.append(createArrow("prev"), dotsContainer, createArrow("next"));
 
-  slider.replaceChildren(track, controls);
+  const viewport = create("div", "album-slider__viewport");
+  viewport.append(track);
+  slider.replaceChildren(viewport, controls);
   goTo(0);
 };
 

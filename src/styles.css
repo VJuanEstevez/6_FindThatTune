@@ -47,6 +47,7 @@
   --shadow-card: 0 0.75rem 2rem rgb(0 0 0 / 0.18);
   --shadow-raised: 0 0.5rem 1.25rem rgb(0 0 0 / 0.3);
   --shadow-dialog: 0 1.25rem 3rem rgb(0 0 0 / 0.4);
+  --shadow-artwork: 0 0.75rem 1.75rem rgb(0 0 0 / 0.55), 0 0.25rem 0.6rem rgb(0 0 0 / 0.4);
 }
 
 /* =========================================================
@@ -336,6 +337,10 @@ body.drawer-is-open {
   }
 }
 
+.drawer__footer .settings-button:not([hidden]) + .settings-button {
+  margin-top: var(--space-1);
+}
+
 .settings-button__icon {
   width: var(--icon-md);
   height: var(--icon-md);
@@ -401,7 +406,7 @@ body.drawer-is-open {
 }
 
 .header__search {
-  width: 100%;
+  flex: 1;
   min-width: 0;
 }
 
@@ -556,6 +561,7 @@ body.drawer-is-open {
 }
 
 .home[data-view="game"] {
+  position: relative;
   view-transition-name: view-game;
 }
 
@@ -689,7 +695,7 @@ body.drawer-is-open {
   display: block;
   overflow: hidden;
   background-color: var(--color-surface-raised);
-  box-shadow: var(--shadow-raised);
+  box-shadow: var(--shadow-artwork);
 
   &--feature,
   &--tile {
@@ -702,7 +708,6 @@ body.drawer-is-open {
     width: 2.5rem;
     aspect-ratio: 1;
     border-radius: var(--radius-sm);
-    box-shadow: none;
   }
 }
 
@@ -1703,6 +1708,7 @@ body.drawer-is-open {
   object-fit: cover;
   border-radius: var(--radius-sm);
   background-color: var(--color-surface);
+  box-shadow: var(--shadow-artwork);
 }
 
 .artist-album__info {
@@ -1848,6 +1854,7 @@ body.drawer-is-open {
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
+  box-shadow: var(--shadow-artwork);
 }
 
 .vinyl__hole {
@@ -1925,6 +1932,7 @@ body.drawer-is-open {
   border-radius: var(--radius-sm);
   object-fit: cover;
   background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-artwork);
 }
 
 .cassette__details {
@@ -2018,7 +2026,7 @@ body.drawer-is-open {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-raised);
-  box-shadow: var(--shadow-raised);
+  box-shadow: var(--shadow-artwork);
 
   img {
     display: block;
@@ -2191,6 +2199,7 @@ body.drawer-is-open {
   object-fit: cover;
   border-radius: var(--radius-sm);
   background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-artwork);
 }
 
 .up-next__info {
@@ -2311,7 +2320,7 @@ body.drawer-is-open {
   border-radius: 50%;
   object-fit: cover;
   background-color: var(--color-surface-raised);
-  box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 0.3);
+  box-shadow: var(--shadow-artwork);
 }
 
 .player.is-playing .player__cover {
@@ -2492,6 +2501,9 @@ body.drawer-is-open {
 }
 
 .game__header-actions {
+  position: absolute;
+  top: calc(var(--size-header) + var(--space-5));
+  right: var(--space-5);
   display: flex;
   flex: none;
   flex-direction: column;
@@ -2607,6 +2619,10 @@ body.drawer-is-open {
 }
 
 .game__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
@@ -2636,6 +2652,11 @@ body.drawer-is-open {
       color: var(--color-bg);
       filter: brightness(1.08);
     }
+  }
+
+  svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
   }
 }
 
@@ -2843,6 +2864,7 @@ body.drawer-is-open {
   border-radius: var(--radius-sm);
   object-fit: cover;
   background-color: var(--color-surface);
+  box-shadow: var(--shadow-artwork);
 }
 
 .game__answer-title {
@@ -3107,6 +3129,24 @@ body.drawer-is-open {
     min-height: 0;
     overflow: visible;
   }
+
+  .game__play-area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .game__result {
+    order: -1;
+  }
+
+  .game__header-actions {
+    position: static;
+    align-items: flex-start;
+    margin-top: var(--space-4);
+  }
+
+  .game__header-buttons {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 48rem) {
@@ -3118,7 +3158,6 @@ body.drawer-is-open {
     bottom: calc(var(--space-4) + 7.5rem);
   }
 
-  .game__play-area,
   .game__setup {
     grid-template-columns: minmax(0, 1fr);
   }

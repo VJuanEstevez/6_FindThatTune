@@ -14,6 +14,7 @@ import { initPlayer } from "./modules/player.js";
 import { initPlayerView } from "./modules/player-view.js";
 import { initArtistModal } from "./modules/artist-modal.js";
 import { initGame } from "./modules/game.js";
+import { initPwa } from "./modules/pwa.js";
 
 initFavorites();
 initMarquee();
@@ -30,3 +31,4 @@ initPlayerView();
 initGridColumns();
 initGame();
 loadGenres();
+initPwa();

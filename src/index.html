@@ -7,6 +7,13 @@
   <meta name="description"
     content="Find that song: tu reproductor de música, favoritos y juego para adivinar canciones." />
   <title>Find that song</title>
+
+  <meta name="theme-color" content="#0b0b12" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Find that song" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
   <script>
     // Aplica el tema guardado antes del primer pintado para evitar un parpadeo.
     try {
@@ -98,7 +105,16 @@
       </nav>
 
       <div class="drawer__footer">
-        <button class="settings-button" type="button">
+        <button class="settings-button" type="button" data-install-button aria-label="Instalar app" hidden>
+          <svg class="settings-button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M12 3v12" />
+            <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+          <span class="settings-button__label">Instalar app</span>
+        </button>
+        <button class="settings-button" type="button" data-settings-open>
           <svg class="settings-button__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="3" />
@@ -132,13 +148,13 @@
 
         <search class="header__search">
           <form class="search-form" action="#" method="get">
-            <label class="visually-hidden" for="song-search">Buscar canciones</label>
+            <label class="visually-hidden" for="header-search">Buscar canciones</label>
             <svg class="search-form__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.5-3.5" />
             </svg>
-            <input class="search-form__input" id="song-search" name="q" type="search"
+            <input class="search-form__input" id="header-search" name="q" type="search"
               placeholder="Buscar canciones, artistas o álbumes..." autocomplete="off" />
             <button class="search-form__submit" type="submit">Buscar</button>
           </form>
@@ -165,8 +181,8 @@
         <section class="home" data-view="search" aria-labelledby="search-title" hidden>
           <div class="home__heading">
             <div>
-              <h2 class="home__title" id="search-title">Artistas en tendencia</h2>
-              <p class="home__subtitle">Los álbumes de los artistas más escuchados ahora.</p>
+              <h2 class="home__title" id="search-title">Buscar</h2>
+              <p class="home__subtitle">Artistas en tendencia</p>
             </div>
 
             <div class="search-filters">
@@ -306,7 +322,7 @@
                 </label>
                 <label class="player-tabs__option">
                   <input class="visually-hidden" type="radio" name="player-type" value="cassette" />
-                  <span>Casete</span>
+                  <span>Cassette</span>
                 </label>
                 <label class="player-tabs__option">
                   <input class="visually-hidden" type="radio" name="player-type" value="album" />
@@ -334,14 +350,12 @@
                     <img class="cassette__cover" data-cassette-cover alt="" width="56" height="56"
                       src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%231d1d2b'/%3E%3Ccircle cx='12' cy='12' r='4' fill='%23a78bfa'/%3E%3C/svg%3E" />
                     <div class="cassette__details">
-                      <span class="cassette__brand">MIXTAPE</span>
                       <span class="cassette__track marquee" data-cassette-track>Selecciona una canción</span>
                       <span class="cassette__artist" data-cassette-artist>Reproductor</span>
                     </div>
                   </div>
                   <div class="cassette__window">
                     <span class="cassette__reel"></span>
-                    <span class="cassette__tape"></span>
                     <span class="cassette__reel"></span>
                   </div>
                   <span class="cassette__screw"></span>
@@ -409,13 +423,6 @@
               <h2 class="home__title" id="game-title">Adivina la canción</h2>
               <p class="home__subtitle">Escucha un fragmento y adivina de qué canción se trata.</p>
             </div>
-            <div class="game__header-actions">
-              <div class="game__header-buttons">
-                <button class="game__button" type="button" data-game-restart hidden>Comenzar de nuevo</button>
-                <button class="game__button" type="button" data-game-settings-open>Ajustes</button>
-                <button class="game__button" type="button" data-game-scores-open>Clasificación</button>
-              </div>
-            </div>
           </div>
 
           <div class="game">
@@ -427,6 +434,9 @@
                 y verás la respuesta con el álbum completo.
               </p>
               <button class="game__button game__button--primary game__start-button" type="button" data-game-play>
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true" focusable="false">
+                  <path d="M8 5v14l11-7L8 5Z" />
+                </svg>
                 Comenzar juego
               </button>
             </div>
@@ -439,7 +449,14 @@
                   <p class="game__round-number" data-game-round-number hidden>Ronda 1 de 10</p>
                   <h3 class="game__question">¿Qué canción suena?</h3>
                   <progress class="game__progress" data-game-progress max="100" value="0"></progress>
-                  <button class="game__button" type="button" data-game-repeat>Repetir fragmento</button>
+                  <button class="game__button" type="button" data-game-repeat>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true" focusable="false">
+                      <path d="M3 12a9 9 0 1 0 3-6.7" />
+                      <path d="M3 4v6h6" />
+                    </svg>
+                    Repetir fragmento
+                  </button>
                 </div>
 
                 <div class="game__play-area">
@@ -459,11 +476,35 @@
 
               </div>
             </div>
+
+            <div class="game__header-actions">
+              <div class="game__header-buttons">
+                <button class="game__button" type="button" data-game-restart hidden>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M20 12a8 8 0 1 1-2.3-5.7" />
+                    <path d="M20 4v7h-7" />
+                  </svg>
+                  Comenzar de nuevo
+                </button>
+                <button class="game__button" type="button" data-game-scores-open>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M4 20V11M10 20V5M16 20v-8M2 20h20" />
+                  </svg>
+                  Clasificación
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="game__feedback" data-game-feedback hidden>
             <p class="game__message" data-game-message role="status" hidden></p>
             <button class="game__button game__button--primary game__next" type="button" data-game-next hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
               Siguiente ronda
             </button>
           </div>

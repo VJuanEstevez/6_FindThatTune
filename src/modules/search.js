@@ -8,7 +8,7 @@ const DEBOUNCE_DELAY = 350;
 
 export const initSearch = () => {
   const form = document.querySelector(".search-form");
-  const input = document.querySelector("#song-search");
+  const input = document.querySelector(".search-form__input");
 
   if (!form || !input) {
     return;
@@ -24,7 +24,6 @@ export const initSearch = () => {
     .catch(() => {});
 
   initGhostAutocomplete(input, () => [...new Set([...artists, ...getGenres()])]);
-
   form.addEventListener("submit", (event) => event.preventDefault());
 
   input.addEventListener("input", () => {

@@ -13,7 +13,7 @@ const DEFAULT_THEME = "violet";
 
 const root = document.documentElement;
 const dialog = document.querySelector("#theme-dialog");
-const settingsButton = document.querySelector(".settings-button");
+const settingsButton = document.querySelector("[data-settings-open]");
 const closeButton = document.querySelector("[data-dialog-close]");
 const themeInputs = document.querySelectorAll('input[name="theme"]');
 

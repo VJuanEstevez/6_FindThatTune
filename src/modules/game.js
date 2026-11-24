@@ -29,7 +29,6 @@ const durationSelect = document.querySelector("[data-game-duration]");
 const totalRoundsSelect = document.querySelector("[data-game-total-rounds]");
 const settingsDialog = document.querySelector("#game-settings-dialog");
 const scoresDialog = document.querySelector("#game-scores-dialog");
-const settingsOpen = document.querySelector("[data-game-settings-open]");
 const settingsClose = document.querySelector("[data-game-settings-close]");
 const scoresOpen = document.querySelector("[data-game-scores-open]");
 const scoresClose = document.querySelector("[data-game-scores-close]");
@@ -66,7 +65,6 @@ let current = null;
 let artistSuggestions = [];
 let roundNumber = 0;
 let totalRounds = 10;
-let confirmMode = "intro";
 let answered = false;
 let timerId = null;
 
@@ -402,11 +400,6 @@ export const initGame = () => {
     artistField.hidden = !isArtist;
   });
 
-  settingsOpen?.addEventListener("click", () => {
-    if (!settingsDialog?.open) {
-      settingsDialog?.showModal();
-    }
-  });
   settingsClose?.addEventListener("click", () => settingsDialog?.close());
   scoresOpen?.addEventListener("click", () => {
     renderScores();
@@ -416,30 +409,24 @@ export const initGame = () => {
   });
   scoresClose?.addEventListener("click", () => scoresDialog?.close());
 
-  const openConfirm = (mode) => {
-    confirmMode = mode;
-    confirmTitle.textContent = mode === "restart" ? "¿Comenzar de nuevo?" : "¿Comenzar el juego?";
-    confirmText.textContent =
-      mode === "restart"
-        ? "Se reiniciará la cuenta de rondas. Tu clasificación se conservará."
-        : "Podrás elegir los ajustes antes de empezar.";
+  const openRestartConfirm = () => {
+    confirmTitle.textContent = "¿Comenzar de nuevo?";
+    confirmText.textContent = "Se reiniciará la cuenta de rondas. Tu clasificación se conservará.";
     if (!confirmDialog?.open) {
       confirmDialog?.showModal();
     }
   };
 
-  playButton?.addEventListener("click", () => openConfirm("intro"));
-  restartButton?.addEventListener("click", () => openConfirm("restart"));
+  playButton?.addEventListener("click", () => {
+    if (!settingsDialog?.open) {
+      settingsDialog?.showModal();
+    }
+  });
+  restartButton?.addEventListener("click", openRestartConfirm);
   confirmCancel.forEach((button) => button.addEventListener("click", () => confirmDialog?.close()));
   confirmAccept?.addEventListener("click", () => {
     confirmDialog?.close();
-    if (confirmMode === "intro") {
-      if (!settingsDialog?.open) {
-        settingsDialog?.showModal();
-      }
-    } else {
-      startRound(true);
-    }
+    startRound(true);
   });
 
   startButton.addEventListener("click", () => {

@@ -1,4 +1,5 @@
 import {
+  getCurrentAlbum,
   getCurrentTrack,
   getQueue,
   isPlaying,
@@ -95,14 +96,18 @@ const renderUpNext = () => {
 
 const syncFavoriteButton = () => {
   const track = getCurrentTrack();
-  const active = Boolean(track) && isFavorite(track);
+  const album = getCurrentAlbum();
+  const active =
+    Boolean(track) && isFavorite(track) && (!album || isFavorite(album));
 
   deckFavorite.disabled = !track;
   deckFavorite.classList.toggle("is-active", active);
   deckFavorite.setAttribute("aria-pressed", String(active));
   deckFavorite.setAttribute(
     "aria-label",
-    `${active ? "Quitar de favoritos" : "Añadir a favoritos"}: ${track?.title ?? ""}`,
+    track
+      ? `${active ? "Quitar" : "Añadir"} la canción y el álbum ${active ? "de" : "a"} favoritos: ${track.title}`
+      : "Añadir a favoritos",
   );
 };
 
@@ -185,8 +190,25 @@ export const initPlayerView = () => {
 
   deckFavorite.addEventListener("click", () => {
     const track = getCurrentTrack();
-    if (track) {
+    const album = getCurrentAlbum();
+    if (!track) {
+      return;
+    }
+
+    const removeBoth = isFavorite(track) && (!album || isFavorite(album));
+    if (removeBoth) {
       toggleFavorite(track);
+      if (album && isFavorite(album)) {
+        toggleFavorite(album);
+      }
+      return;
+    }
+
+    if (!isFavorite(track)) {
+      toggleFavorite(track);
+    }
+    if (album && !isFavorite(album)) {
+      toggleFavorite(album);
     }
   });
 

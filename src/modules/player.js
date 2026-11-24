@@ -22,6 +22,7 @@ const albumTracksCache = new Map();
 let queue = [];
 let currentIndex = 0;
 let currentItem = null;
+let currentAlbum = null;
 let playRequest = 0;
 const listeners = new Set();
 
@@ -48,6 +49,8 @@ const getAlbumTracks = async (album) => {
       type: "songs",
       rank: Number(result.trackNumber) || index + 1,
       title: result.trackName,
+      album: album.title,
+      albumId: album.id,
       artist: result.artistName ?? album.artist,
       artistId: result.artistId ?? album.artistId,
       artwork: album.artwork ?? result.artworkUrl100,
@@ -130,11 +133,27 @@ const loadAndPlay = async () => {
   }
 };
 
+const albumFromTrack = (item) =>
+  item?.album
+    ? {
+        id: item.albumId ?? `album:${getItemId(item)}`,
+        type: "albums",
+        title: item.album,
+        artist: item.artist,
+        artistId: item.artistId,
+        artwork: item.artwork,
+        genre: item.genre,
+        releaseDate: item.releaseDate,
+        href: item.href ?? "#",
+      }
+    : null;
+
 export const playTrack = async (item, items = []) => {
   if (!item) {
     return;
   }
 
+  currentAlbum = item.type === "albums" ? item : albumFromTrack(item);
   let nextQueue = items.length > 0 ? items : [item];
   let target = item;
 
@@ -170,6 +189,8 @@ const step = (direction) => {
 };
 
 export const getCurrentTrack = () => currentItem;
+
+export const getCurrentAlbum = () => currentAlbum;
 
 export const isPlaying = () => !audio.paused;
 
