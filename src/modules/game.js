@@ -128,12 +128,16 @@ const renderScores = () => {
       const stat = create("div", "scores-panel__stat");
       stat.append(create("dt", "", label), create("dd", "", value));
       return stat;
-    }),
+    })
   );
 
   if (stats.history.length === 0) {
     const row = create("tr");
-    const cell = create("td", "scores-panel__empty", "Aún no hay partidas. Empieza una ronda para aparecer aquí.");
+    const cell = create(
+      "td",
+      "scores-panel__empty",
+      "Aún no hay partidas. Empieza una ronda para aparecer aquí."
+    );
     cell.colSpan = 4;
     row.append(cell);
     historyBody.replaceChildren(row);
@@ -148,10 +152,14 @@ const renderScores = () => {
         create("td", "", Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("es")),
         create("td", "", entry.title ?? "—"),
         create("td", "", entry.mode === "artist" ? "Artista" : "Género"),
-        create("td", entry.correct ? "is-correct" : "is-wrong", entry.correct ? "Acertada" : "Fallada"),
+        create(
+          "td",
+          entry.correct ? "is-correct" : "is-wrong",
+          entry.correct ? "Acertada" : "Fallada"
+        )
       );
       return row;
-    }),
+    })
   );
 };
 
@@ -204,11 +212,11 @@ const renderOptions = () => {
       button.setAttribute("aria-label", `Adivinar ${option.title} de ${option.artist}`);
       button.append(
         create("span", "game__option-title", option.title),
-        create("span", "game__option-artist", option.artist),
+        create("span", "game__option-artist", option.artist)
       );
       button.addEventListener("click", () => handleAnswer(option, button));
       return button;
-    }),
+    })
   );
 };
 
@@ -346,7 +354,7 @@ const startRound = async (reset = false) => {
 
     current = pool[Math.floor(Math.random() * pool.length)];
     const distractors = shuffle(
-      pool.filter((song) => normalize(song.title) !== normalize(current.title)),
+      pool.filter((song) => normalize(song.title) !== normalize(current.title))
     ).slice(0, 3);
     options = shuffle([current, ...distractors]);
 
@@ -363,7 +371,7 @@ const populateArtists = () => {
   fetchTrendingSongs()
     .then((songs) => {
       const artists = [...new Set(songs.map((song) => song.artist).filter(Boolean))].sort((a, b) =>
-        a.localeCompare(b, "es"),
+        a.localeCompare(b, "es")
       );
       artistSuggestions = artists;
     })

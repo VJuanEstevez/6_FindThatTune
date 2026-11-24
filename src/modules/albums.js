@@ -9,8 +9,7 @@ const pendingFeeds = { albums: null, songs: null };
 
 const getLabel = (node) => node?.label ?? "";
 
-const normalizeArtwork = (url) =>
-  url.replace(/\/\d+x\d+bb\.(?:png|jpg)$/i, "/600x600bb.jpg");
+const normalizeArtwork = (url) => url.replace(/\/\d+x\d+bb\.(?:png|jpg)$/i, "/600x600bb.jpg");
 
 const getHref = (entry) => {
   const link = entry.link;
@@ -20,7 +19,9 @@ const getHref = (entry) => {
 
 const getPreviewUrl = (entry) => {
   const links = Array.isArray(entry.link) ? entry.link : [entry.link];
-  return links.find((link) => link?.attributes?.["im:assetType"] === "preview")?.attributes?.href ?? "";
+  return (
+    links.find((link) => link?.attributes?.["im:assetType"] === "preview")?.attributes?.href ?? ""
+  );
 };
 
 const getArtistId = (entry) => {
@@ -89,7 +90,7 @@ const fetchChart = (type, limit) => {
       key,
       (async () => {
         const response = await fetch(
-          `https://itunes.apple.com/es/rss/${CHART_FEEDS[type]}/limit=${limit}/json`,
+          `https://itunes.apple.com/es/rss/${CHART_FEEDS[type]}/limit=${limit}/json`
         );
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -103,7 +104,7 @@ const fetchChart = (type, limit) => {
       })().catch((error) => {
         chartCache.delete(key);
         throw error;
-      }),
+      })
     );
   }
   return chartCache.get(key);
@@ -130,8 +131,7 @@ const getYear = (item) => {
   return year ? Number(year[0]) : 0;
 };
 
-const artistKey = (item) =>
-  (item.artistId ?? item.artist ?? "").trim().toLocaleLowerCase("es");
+const artistKey = (item) => (item.artistId ?? item.artist ?? "").trim().toLocaleLowerCase("es");
 
 const selectTrendingArtists = async (type, limit) => {
   const chart = await fetchChart(type, 200);
@@ -197,15 +197,12 @@ const classics = async (type, decade, limit) => {
     return range ? year >= range[0] && year <= range[1] : year <= 2009;
   });
 
-  return collection
-    .sort((a, b) => getTime(a.releaseDate) - getTime(b.releaseDate))
-    .slice(0, limit);
+  return collection.sort((a, b) => getTime(a.releaseDate) - getTime(b.releaseDate)).slice(0, limit);
 };
 
 export const fetchClassicAlbums = (decade = "all", limit = 100) =>
   classics("albums", decade, limit);
-export const fetchClassicSongs = (decade = "all", limit = 100) =>
-  classics("songs", decade, limit);
+export const fetchClassicSongs = (decade = "all", limit = 100) => classics("songs", decade, limit);
 
 const searchCache = new Map();
 
@@ -223,7 +220,7 @@ const toCatalogItem = (result, index, type) => {
     artwork: result.artworkUrl100?.replace(/\/\d+x\d+bb/, "/600x600bb.jpg") ?? "",
     genre: result.primaryGenreName ?? "",
     releaseDate: result.releaseDate?.slice(0, 4) ?? "",
-    href: isAlbum ? result.collectionViewUrl : result.trackViewUrl ?? "#",
+    href: isAlbum ? result.collectionViewUrl : (result.trackViewUrl ?? "#"),
     previewUrl: result.previewUrl ?? "",
   };
 };
@@ -243,9 +240,7 @@ export const searchCatalog = (term, type) => {
 
         const data = await response.json();
         const items = (data.results ?? [])
-          .filter((result) =>
-            type === "albums" ? result.collectionName : result.trackName,
-          )
+          .filter((result) => (type === "albums" ? result.collectionName : result.trackName))
           .map((result, index) => toCatalogItem(result, index, type));
 
         if (items.length === 0) {
@@ -256,7 +251,7 @@ export const searchCatalog = (term, type) => {
       })().catch((error) => {
         searchCache.delete(key);
         throw error;
-      }),
+      })
     );
   }
 
@@ -283,10 +278,7 @@ export const searchArtistSongs = async (name) => {
         const data = await response.json();
         const term = normalizeText(name);
         const items = (data.results ?? [])
-          .filter(
-            (result) =>
-              result.trackName && normalizeText(result.artistName).includes(term),
-          )
+          .filter((result) => result.trackName && normalizeText(result.artistName).includes(term))
           .map((result, index) => toCatalogItem(result, index, "songs"));
 
         if (items.length === 0) {
@@ -296,7 +288,7 @@ export const searchArtistSongs = async (name) => {
       })().catch((error) => {
         searchCache.delete(key);
         throw error;
-      }),
+      })
     );
   }
   return searchCache.get(key);

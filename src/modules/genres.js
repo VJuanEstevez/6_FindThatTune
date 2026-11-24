@@ -4,7 +4,8 @@ let genres = [...EXTRA_GENRES];
 let loadPromise = null;
 const listeners = new Set();
 
-const normalize = (values) => [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+const normalize = (values) =>
+  [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
 
 const publish = (values) => {
   genres = normalize(values);
@@ -37,9 +38,7 @@ export const fillGenreSelect = (select, selected = "all", leadingNodes = []) => 
   select.replaceChildren(...leadingNodes, genreGroup);
 
   const leadingValues = leadingNodes.flatMap((node) =>
-    node.tagName === "OPTGROUP"
-      ? [...node.children].map((option) => option.value)
-      : [node.value],
+    node.tagName === "OPTGROUP" ? [...node.children].map((option) => option.value) : [node.value]
   );
   const valid = [...leadingValues, "all", ...genres];
   const value = valid.includes(selected) ? selected : "all";
@@ -49,12 +48,14 @@ export const fillGenreSelect = (select, selected = "all", leadingNodes = []) => 
 
 export const loadGenres = () => {
   if (!loadPromise) {
-    loadPromise = Promise.allSettled([fetchAlbumChart(200), fetchSongChart(200)]).then((results) => {
-      const values = results.flatMap((result) =>
-        result.status === "fulfilled" ? result.value.map((item) => item.genre) : [],
-      );
-      addGenres(values);
-    });
+    loadPromise = Promise.allSettled([fetchAlbumChart(200), fetchSongChart(200)]).then(
+      (results) => {
+        const values = results.flatMap((result) =>
+          result.status === "fulfilled" ? result.value.map((item) => item.genre) : []
+        );
+        addGenres(values);
+      }
+    );
   }
   return loadPromise;
 };

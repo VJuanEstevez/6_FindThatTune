@@ -26,8 +26,7 @@ const createStatus = (message) => {
   return status;
 };
 
-const itemsByType = () =>
-  getFavorites().filter((item) => (item.type ?? "albums") === state.type);
+const itemsByType = () => getFavorites().filter((item) => (item.type ?? "albums") === state.type);
 
 const filteredItems = () => {
   const items = itemsByType();

@@ -63,10 +63,7 @@ const createSlide = (album, index, queue) => {
   const genre = document.createElement("div");
   genre.append(create("dt", "", "Género"), create("dd", "", album.genre));
   const release = document.createElement("div");
-  release.append(
-    create("dt", "", "Lanzamiento"),
-    create("dd", "", album.releaseDate),
-  );
+  release.append(create("dt", "", "Lanzamiento"), create("dd", "", album.releaseDate));
   meta.append(genre, release);
   body.append(meta);
 
@@ -92,16 +89,9 @@ const createSlide = (album, index, queue) => {
 const createArrow = (direction) => {
   const button = create("button", "album-slider__arrow");
   button.type = "button";
-  button.setAttribute(
-    "aria-label",
-    direction === "prev" ? "Disco anterior" : "Disco siguiente",
-  );
+  button.setAttribute("aria-label", direction === "prev" ? "Disco anterior" : "Disco siguiente");
   button.append(
-    createIcon(
-      direction === "prev"
-        ? '<path d="m15 18-6-6 6-6" />'
-        : '<path d="m9 18 6-6-6-6" />',
-    ),
+    createIcon(direction === "prev" ? '<path d="m15 18-6-6 6-6" />' : '<path d="m9 18 6-6-6-6" />')
   );
   button.addEventListener("click", () => {
     goTo(currentIndex + (direction === "prev" ? -1 : 1));
@@ -219,7 +209,7 @@ const loadAlbums = async () => {
     albums = [];
     showStatus(
       "No se pudieron cargar los discos. Comprueba tu conexión e inténtalo de nuevo.",
-      true,
+      true
     );
   }
 };

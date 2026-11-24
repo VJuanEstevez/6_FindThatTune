@@ -66,10 +66,7 @@ export const initGhostAutocomplete = (input, getSuggestions) => {
     if (value.trim()) {
       const found = (getSuggestions() ?? []).find((entry) => {
         const candidate = String(entry ?? "");
-        return (
-          candidate.length > value.length &&
-          normalize(candidate).startsWith(normalize(value))
-        );
+        return candidate.length > value.length && normalize(candidate).startsWith(normalize(value));
       });
       if (found) {
         match = String(found);

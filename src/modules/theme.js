@@ -1,13 +1,4 @@
-const THEMES = [
-  "violet",
-  "emerald",
-  "ocean",
-  "light",
-  "amber",
-  "rose",
-  "night",
-  "mono",
-];
+const THEMES = ["violet", "emerald", "ocean", "light", "amber", "rose", "night", "mono"];
 const STORAGE_KEY = "find-that-song-theme";
 const DEFAULT_THEME = "violet";
 
@@ -31,9 +22,7 @@ const applyTheme = (theme) => {
   const selectedTheme = isValidTheme(theme) ? theme : DEFAULT_THEME;
   root.dataset.theme = selectedTheme;
 
-  const selectedInput = document.querySelector(
-    `input[name="theme"][value="${selectedTheme}"]`,
-  );
+  const selectedInput = document.querySelector(`input[name="theme"][value="${selectedTheme}"]`);
   if (selectedInput) {
     selectedInput.checked = true;
   }

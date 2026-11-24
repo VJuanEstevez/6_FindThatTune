@@ -104,11 +104,7 @@ const createArrowButton = (direction) => {
   button.setAttribute("aria-label", previous ? "Página anterior" : "Página siguiente");
   button.disabled = previous ? currentPage === 1 : currentPage === getPageCount();
   button.append(
-    createIcon(
-      previous
-        ? '<path d="m15 18-6-6 6-6" />'
-        : '<path d="m9 18 6-6-6-6" />',
-    ),
+    createIcon(previous ? '<path d="m15 18-6-6 6-6" />' : '<path d="m9 18 6-6-6-6" />')
   );
   button.addEventListener("click", () => changePage(currentPage + (previous ? -1 : 1)));
   return button;
@@ -170,7 +166,7 @@ const showLoadError = () => {
   const status = create(
     "p",
     "album-slider__status",
-    "No se pudieron cargar los discos. Comprueba tu conexión e inténtalo de nuevo.",
+    "No se pudieron cargar los discos. Comprueba tu conexión e inténtalo de nuevo."
   );
   status.setAttribute("role", "status");
   const retry = create("button", "album-slider__retry", "Reintentar");

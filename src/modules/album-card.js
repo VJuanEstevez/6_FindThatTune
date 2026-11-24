@@ -52,7 +52,7 @@ const syncFavoriteButton = (button, item) => {
   button.setAttribute("aria-pressed", String(active));
   button.setAttribute(
     "aria-label",
-    `${active ? "Quitar de favoritos" : "Añadir a favoritos"}: ${item.title}`,
+    `${active ? "Quitar de favoritos" : "Añadir a favoritos"}: ${item.title}`
   );
 };
 
@@ -61,8 +61,8 @@ const createFavoriteButton = (item) => {
   button.type = "button";
   button.append(
     createIcon(
-      '<path d="M20.8 5.6a5.3 5.3 0 0 0-7.5 0L12 6.9l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5l1.3 1.3L12 22l7.5-7.6 1.3-1.3a5.3 5.3 0 0 0 0-7.5Z" />',
-    ),
+      '<path d="M20.8 5.6a5.3 5.3 0 0 0-7.5 0L12 6.9l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5l1.3 1.3L12 22l7.5-7.6 1.3-1.3a5.3 5.3 0 0 0 0-7.5Z" />'
+    )
   );
   syncFavoriteButton(button, item);
 
@@ -112,15 +112,12 @@ export const createTile = (item, queue = [item]) => {
 export const createRow = (item, queue = [item]) => {
   const row = create("li", "track-row");
   const info = create("div", "track-row__info");
-  info.append(
-    create("h3", "track-row__title", item.title),
-    createArtistButton(item),
-  );
+  info.append(create("h3", "track-row__title", item.title), createArtistButton(item));
   row.append(
     createCover(item, "row"),
     info,
     create("span", "track-row__genre", item.genre),
-    createFavoriteButton(item),
+    createFavoriteButton(item)
   );
   attachPlay(row, item, queue);
   return row;

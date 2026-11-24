@@ -35,7 +35,7 @@ const getAlbumTracks = async (album) => {
   }
 
   const response = await fetch(
-    `https://itunes.apple.com/lookup?id=${encodeURIComponent(key)}&country=es&entity=song`,
+    `https://itunes.apple.com/lookup?id=${encodeURIComponent(key)}&country=es&entity=song`
   );
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
@@ -70,9 +70,7 @@ const getPreviewUrl = async (item) => {
   }
 
   const id = encodeURIComponent(key);
-  const response = await fetch(
-    `https://itunes.apple.com/lookup?id=${id}&country=es&entity=song`,
-  );
+  const response = await fetch(`https://itunes.apple.com/lookup?id=${id}&country=es&entity=song`);
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }

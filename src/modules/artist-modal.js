@@ -93,13 +93,13 @@ const createAlbumButton = (album, collection) => {
   const info = create("span", "artist-album__info");
   info.append(
     create("span", "artist-album__title", album.title),
-    create("span", "artist-album__year", album.releaseDate),
+    create("span", "artist-album__year", album.releaseDate)
   );
 
   button.append(cover, info);
   button.addEventListener("click", () => {
     document.dispatchEvent(
-      new CustomEvent("artisttrackchange", { detail: { item: album, queue: collection } }),
+      new CustomEvent("artisttrackchange", { detail: { item: album, queue: collection } })
     );
     dialog.close();
   });

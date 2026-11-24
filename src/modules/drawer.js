@@ -7,7 +7,10 @@ const setOpen = (open) => {
   drawer.classList.toggle("is-open", open);
   backdrop.classList.toggle("is-open", open);
   toggle.setAttribute("aria-expanded", String(open));
-  toggle.setAttribute("aria-label", open ? "Cerrar menú de navegación" : "Abrir menú de navegación");
+  toggle.setAttribute(
+    "aria-label",
+    open ? "Cerrar menú de navegación" : "Abrir menú de navegación"
+  );
   document.body.classList.toggle("drawer-is-open", open);
 };
 

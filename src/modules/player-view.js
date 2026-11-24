@@ -97,8 +97,7 @@ const renderUpNext = () => {
 const syncFavoriteButton = () => {
   const track = getCurrentTrack();
   const album = getCurrentAlbum();
-  const active =
-    Boolean(track) && isFavorite(track) && (!album || isFavorite(album));
+  const active = Boolean(track) && isFavorite(track) && (!album || isFavorite(album));
 
   deckFavorite.disabled = !track;
   deckFavorite.classList.toggle("is-active", active);
@@ -107,7 +106,7 @@ const syncFavoriteButton = () => {
     "aria-label",
     track
       ? `${active ? "Quitar" : "Añadir"} la canción y el álbum ${active ? "de" : "a"} favoritos: ${track.title}`
-      : "Añadir a favoritos",
+      : "Añadir a favoritos"
   );
 };
 

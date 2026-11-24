@@ -9,7 +9,7 @@ const SHELL_URLS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-512-maskable.png",
-  "./icons/apple-touch-icon.png"
+  "./icons/apple-touch-icon.png",
 ];
 
 function scopeUrl(path) {
@@ -36,7 +36,8 @@ async function precacheBundledAssets(cache) {
   let match;
   while ((match = attributePattern.exec(html)) !== null) {
     const value = match[1];
-    if (!value || value.startsWith("#") || value.startsWith("data:") || /^[a-z]+:/i.test(value)) continue;
+    if (!value || value.startsWith("#") || value.startsWith("data:") || /^[a-z]+:/i.test(value))
+      continue;
     let url;
     try {
       url = new URL(value, self.registration.scope);
